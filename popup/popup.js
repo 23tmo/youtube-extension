@@ -8,16 +8,42 @@ function runFunction(){
     const maxViewsElement = document.getElementById('maxViewsInput');
     const timeValueElement = document.getElementById('time-value');
     const timeUnitElement = document.getElementById('time-unit');
+    const minDurationElement = document.getElementById('minDurInput');
+    const maxDurationElement = document.getElementById('maxDurInput');
 
-    // Apply
+    // Buttons
     const applyButton = document.getElementById('apply');
+    const clearButton = document.getElementById('clear');
+
+    clearButton.onclick = () => {
+        minViewsElement.value = '';
+        maxViewsElement.value = '';
+        timeValueElement.value = '';
+        timeUnitElement.value = 'select';
+        minDurationElement.value = '';
+        maxDurationElement.value = '';
+        
+        const prefs = {
+            minPref: null,
+            maxPref: null,
+            timeValuePref: null,
+            timeUnitPref: null,
+            minDurationPref: null,
+            maxDurationPref: null
+        }
+        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs){
+            chrome.tabs.sendMessage(tabs[0].id, {message: 'clearPrefs', prefs});
+        });
+    }
  
     applyButton.onclick = () => {
         const prefs = {
             minPref: minViewsElement.value,
             maxPref: maxViewsElement.value,
             timeValuePref: timeValueElement.value,
-            timeUnitPref: timeUnitElement.value
+            timeUnitPref: timeUnitElement.value,
+            minDurationPref: minDurationElement.value,
+            maxDurationPref: maxDurationElement.value
         }
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs){
             chrome.tabs.sendMessage(tabs[0].id, {message: 'newPrefs', prefs});
@@ -25,8 +51,8 @@ function runFunction(){
     }
 
     // Save user prefs until page reload
-    chrome.storage.session.get(["minPref", "maxPref", "timeValuePref", "timeUnitPref"], (result) => {
-        const { minPref, maxPref, timeValuePref, timeUnitPref } = result;
+    chrome.storage.session.get(["minPref", "maxPref", "timeValuePref", "timeUnitPref", 'minDurationPref', 'maxDurationPref'], (result) => {
+        const { minPref, maxPref, timeValuePref, timeUnitPref, minDurationPref, maxDurationPref} = result;
         if (minPref){
             minViewsElement.value = minPref;
         }
@@ -38,6 +64,12 @@ function runFunction(){
         } 
         if (timeUnitPref){
             timeUnitElement.value = timeUnitPref;
+        } 
+        if (minDurationPref){
+            minDurationElement.value = minDurationPref;
+        } 
+        if (maxDurationPref){
+            maxDurationElement.value = maxDurationPref;
         } 
     })
 }
