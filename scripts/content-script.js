@@ -1,13 +1,31 @@
-var MIN_VIEWS = null;
+var MAX_DURATION = {
+    seconds: null,
+    minutes: null,
+    hours: null
+};
+var MIN_DURATION = {
+    seconds: null,
+    minutes: null,
+    hours: null
+};
 var MAX_VIEWS = null;
-var TIME_VALUE = null;
+var MIN_VIEWS = null;
+
 var TIME_UNIT = null;
-const TIME_UNITS = ['seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
+var TIME_VALUE = null;
+
+
+const TIME_UNITS = ['seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years']; 
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-
-    if (request.message === "newPrefs"){
+    if (request.message === "newPrefs" || request.message === "clearPrefs"){
         chrome.storage.session.set(request.prefs);
+        const [minHours, minMinutes, minSeconds] = request.prefs.minDurationPref.split(':');
+        const [maxHours, maxMinutes, maxSeconds] = request.prefs.maxDurationPref.split(':');
+
+        Object.assign(MIN_DURATION, { hours: parseInt(minHours), minutes: parseInt(minMinutes), seconds: parseInt(minSeconds) }); 
+        Object.assign(MAX_DURATION, { hours: parseInt(maxHours), minutes: parseInt(maxMinutes), seconds: parseInt(maxSeconds) });
+
         MIN_VIEWS = request.prefs.minPref;
         MAX_VIEWS = request.prefs.maxPref;
         TIME_VALUE = request.prefs.timeValuePref;
@@ -29,7 +47,7 @@ function init() {
             for (let i = 0; i < addedNodes.length; i++) {
                 if(addedNodes[i].parentElement){
                     if(addedNodes[i].parentElement.id == 'content'){
-                        videos.push(addedNodes[i].parentElement.parentElement);
+                        videos.push(addedNodes[i].parentElement.parentElement); 
                     }
                 }
             }
@@ -63,7 +81,6 @@ function init() {
         return null;
     }
 
-    // When video was posted
     var getAge = function(video) {
         var metadata = video.querySelector(
             'div#metadata-line'
@@ -74,6 +91,7 @@ function init() {
             if (ageElement){
                 var ageText = ageElement.textContent.trim();
                 ageText = ageText.replace(/Streamed\s*/i, '').replace(/ago\s*/i, '').trim();
+
                 var ageParts = ageText.split(' '); // Split the text content by spaces
 
                 // Assuming age is always in format "X unit ago" 
@@ -94,6 +112,38 @@ function init() {
             }
         }
         return null;
+    }
+
+    var getDuration = function(video){
+        var timeStatus = video.querySelector('div#time-status');
+        if (timeStatus){
+            var timeText = timeStatus.querySelector('span#text').textContent;
+            timeText = timeText.replace(/[^0-9:]/g, '').trim();
+            var timeParts = timeText.split(':');
+            
+            // Default values
+            var duration = {
+                hours: 0,
+                minutes: 0,
+                seconds: 0
+            };
+            // Update duration based on the number of parts
+            if (timeParts.length === 2) {
+                duration.minutes = parseInt(timeParts[0]); // Minutes and seconds
+                duration.seconds = parseInt(timeParts[1]);
+            } else if (timeParts.length === 3) {
+                duration.hours = parseInt(timeParts[0]); // Hours, minutes, and seconds
+                duration.minutes = parseInt(timeParts[1]);
+                duration.seconds = parseInt(timeParts[2]);
+            }
+            else{
+                return null;
+            }
+
+
+            return duration;
+        }
+        return null; 
     }
 
     // Convert text with 'K' or 'M' to number for comparison
@@ -129,24 +179,41 @@ function init() {
         return false;
     }
 
+
+    var outsideDurationRange = function(duration) {
+        if (!duration) return false;
+    
+        const { hours, minutes, seconds } = duration;
+        const { hours: minHours, minutes: minMinutes, seconds: minSeconds } = MIN_DURATION;
+        const { hours: maxHours, minutes: maxMinutes, seconds: maxSeconds } = MAX_DURATION;
+    
+        const isBelowMin = hours < minHours ||
+                           (hours === minHours && (minutes < minMinutes || 
+                           (minutes === minMinutes && seconds < minSeconds)));
+    
+        const isAboveMax = hours > maxHours ||
+                           (hours === maxHours && (minutes > maxMinutes || 
+                           (minutes === maxMinutes && seconds > maxSeconds)));
+    
+        return isBelowMin || isAboveMax;
+    };
+
     var displayVideo = function(video){
         var views = getViews(video);
         var age = getAge(video);
+        var duration = getDuration(video);
         var section = document.querySelector('ytd-rich-section-renderer');
 
-        if (outsideViewRange(views) || outsideAgeRange(age)) {
+        if (outsideViewRange(views) || outsideDurationRange(duration) || outsideAgeRange(age)) {
             video.style.display = 'none';
-            console.log(
-                'REMOVED views: ' + (views || 'none') + 
-                ' age: ' + ((age && age.value) || 'none') + 
-                ' ' + ((age && age.unit) || 'none')
-              );
+
         }
         else{
             video.style.display = 'block';
         }
-        
+        // Remove section if present
         if (section){
+            //console.log('REMOVED SECTION');
             section.remove();
         }
     }
@@ -155,7 +222,7 @@ function init() {
     var handleVideos = function(addedNodes){
         var videos = getVideos(addedNodes);
         if(videos && videos != []){
-            videos.forEach(displayVideo);
+            videos.forEach(displayVideo); 
         }
     }
 
@@ -180,7 +247,7 @@ function init() {
 
             // Start observing the target node for configured mutations
             observer.observe(targetNode, config);
-        
+            
             // Initial run to load the current videos
             handleVideos(null);
             

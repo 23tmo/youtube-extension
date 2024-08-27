@@ -1,2 +1,2 @@
 ## YouTube Extension
-A chrome extension that allows users to filter videos on YouTube home based on the amount of views and post date the videos have. 
+A chrome extension to dynamically filter YouTube homepage videos and recommendations by view count, length, and upload date for a more tailored browsing experience.

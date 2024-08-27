@@ -1,6 +1,6 @@
 body {
-    width: 400px; /*prev 300*/
-    height: 200px; /*prev 150*/
+    width: 350px; 
+    height: 150px; 
     background-color: #373636;
 }
 h1 {
@@ -40,8 +40,7 @@ h1 {
     
   }
 
-  .apply-button:hover,
-  .apply-button:focus { 
+  .apply-button:hover{ 
     background-color: rgb(236, 43, 43);;
     color: #ffffff;
   }
@@ -58,25 +57,49 @@ h1 {
     color: rgba(0, 0, 0, .3);
   }
 
-  .input-container {
-    margin-bottom: 5px;
-  }
+  .button-container {
+    display: flex;
+    justify-content: space-between; 
+}
 
-  label {
+.input-container {
+    display: flex; 
+    justify-content: space-between; 
+
+    width: 50%; 
     margin-bottom: 5px;
+    box-sizing: border-box;
+    align-items: center; 
+}
+
+.input-group {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    margin-right: 10px;
+    align-items: center; 
+}
+
+.input-group:last-child {
+    margin-right: 0;
+}
+
+label {
+    white-space: nowrap; 
+    margin-bottom: 5px;
+    margin-right: 5px;
     color: white;
     font-weight: bold;
     font-size: 12px;
     font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
-  }
+}
 
-  input[type="number"] {
-    width: 50%;
-    padding: 10px;
+input {
+    padding: 7px;
     font-size: 12px;
     border: none;
     border-radius: 15px;
     background-color: #e6e6e6;
     text-align: center;
     box-shadow: none;
-  }
+}
