@@ -1,22 +1,29 @@
 var MIN_VIEWS = null;
 var MAX_VIEWS = null;
+var TIME_VALUE = null;
+var TIME_UNIT = null;
+const TIME_UNITS = ['seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years'];
 
-// Await 'apply' button click to start filter
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if (request.message === "givenThreshold"){
+
+    if (request.message === "newPrefs"){
         chrome.storage.session.set(request.prefs);
         MIN_VIEWS = request.prefs.minPref;
         MAX_VIEWS = request.prefs.maxPref;
-        filterVideos();
+        TIME_VALUE = request.prefs.timeValuePref;
+        TIME_UNIT = request.prefs.timeUnitPref;
+        if (TIME_UNIT === 'select'){ 
+            TIME_UNIT = null;
+        }
      }
+     init();
 })
-
-function filterVideos() {
+function init() {
     'use strict';
 
     // Get all homescreen videos
     var getVideos = function(addedNodes) {
-        // When addedNodes not null, only processes newly added nodes to DOM
+        // Only getting recently loaded videos
         if (addedNodes){
             var videos = [];
             for (let i = 0; i < addedNodes.length; i++) {
@@ -28,11 +35,11 @@ function filterVideos() {
             }
             return videos;
         }
-        // Initial and rerendering run:
+        // Initial and rerendering runs:
         return document.querySelectorAll('ytd-rich-item-renderer');
     }
 
-    // Get video views
+    // Get video's views
     var getViews = function(video) {
         var metadata = video.querySelector(
             'div#metadata-line'
@@ -56,6 +63,39 @@ function filterVideos() {
         return null;
     }
 
+    // When video was posted
+    var getAge = function(video) {
+        var metadata = video.querySelector(
+            'div#metadata-line'
+        );
+        if (metadata){
+            var ageElement = Array.from(metadata.querySelectorAll('span.inline-metadata-item.style-scope.ytd-video-meta-block'))
+            .find(element => element.textContent.includes('ago'));
+            if (ageElement){
+                var ageText = ageElement.textContent.trim();
+                ageText = ageText.replace(/Streamed\s*/i, '').replace(/ago\s*/i, '').trim();
+                var ageParts = ageText.split(' '); // Split the text content by spaces
+
+                // Assuming age is always in format "X unit ago" 
+                var timeValue = ageParts[0]; 
+                var timeUnit = ageParts[1]; 
+                
+                // Add 's' to unit if needed
+                if (!timeUnit.endsWith('s')) {
+                    timeUnit += 's';
+                }
+
+                var age = {
+                    value: timeValue,
+                    unit: timeUnit
+                };
+
+                return age;
+            }
+        }
+        return null;
+    }
+
     // Convert text with 'K' or 'M' to number for comparison
     var convertToNumber = function(text){
         // Remove commas, convert to float
@@ -67,32 +107,55 @@ function filterVideos() {
         }
         return viewCountNumber;
     }
+
+    var outsideViewRange = function(views){
+        return (!views || (MAX_VIEWS && views > MAX_VIEWS) || (MIN_VIEWS && views < MIN_VIEWS));
+    }
+
+    var outsideAgeRange = function(age){
+        if (age && TIME_UNIT && TIME_VALUE) {
+            // Find the index of the age unit and the maximum allowed unit
+            var ageUnitIndex = TIME_UNITS.indexOf(age.unit);
+            var maxUnitIndex = TIME_UNITS.indexOf(TIME_UNIT);
     
+            if (ageUnitIndex > maxUnitIndex) {
+                return true;
+            }
+
+            if (ageUnitIndex === maxUnitIndex) {
+                return age.value > TIME_VALUE;
+            }
+        }
+        return false;
+    }
+
     var displayVideo = function(video){
         var views = getViews(video);
+        var age = getAge(video);
         var section = document.querySelector('ytd-rich-section-renderer');
 
-        if (!views ||  
-            (MAX_VIEWS && views > MAX_VIEWS) ||
-            (MIN_VIEWS && views < MIN_VIEWS)) {
-            // Changing display style instead of remove to reshow if threshold changes
-            video.style.display = 'none'; 
+        if (outsideViewRange(views) || outsideAgeRange(age)) {
+            video.style.display = 'none';
+            console.log(
+                'REMOVED views: ' + (views || 'none') + 
+                ' age: ' + ((age && age.value) || 'none') + 
+                ' ' + ((age && age.unit) || 'none')
+              );
         }
         else{
             video.style.display = 'block';
         }
-
-        // Removing extra section breaks
+        
         if (section){
             section.remove();
         }
     }
 
-    // Process and display newly loaded videos
+    // Display videos views in console
     var handleVideos = function(addedNodes){
         var videos = getVideos(addedNodes);
         if(videos && videos != []){
-            videos.forEach(displayVideo); 
+            videos.forEach(displayVideo);
         }
     }
 
@@ -108,7 +171,7 @@ function filterVideos() {
                         handleVideos(mutation.addedNodes);
                     }
                 }
-                // Run on all videos (included previously handled) regularly to catch re-rendered ones
+                // Run on all videos regularly to catch re-rendered ones
                 handleVideos(null);
             };
 
@@ -117,10 +180,11 @@ function filterVideos() {
 
             // Start observing the target node for configured mutations
             observer.observe(targetNode, config);
-
-            // Initial run to load current videos
+        
+            // Initial run to load the current videos
             handleVideos(null);
             
+
         } else {
             // If the target node is not found, check again after a short delay
             console.error('Target node not found, retrying...');
@@ -130,4 +194,5 @@ function filterVideos() {
 
     // Initial run call
     run();
+    
 };
