@@ -1,6 +1,6 @@
 body {
-    width: 300px;
-    height: 150px;
+    width: 400px; /*prev 300*/
+    height: 200px; /*prev 150*/
     background-color: #373636;
 }
 h1 {
@@ -42,7 +42,7 @@ h1 {
 
   .apply-button:hover,
   .apply-button:focus { 
-    background-color: red;
+    background-color: rgb(236, 43, 43);;
     color: #ffffff;
   }
   

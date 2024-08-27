@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="popup.css">
   </head>
   <body>
-    <h1>YouTube Views Filter</h1>
+    <h1>YouTube Recommendations Filter</h1>
     <form>
       <div class="input-container">
         <label for="minViewsInput">Min views:</label>
@@ -19,10 +19,25 @@
         <input type="number" id="maxViewsInput" placeholder="No max" name="maxViews"><br> 
       </div>
       
-      <button id="apply" class="apply-button">Apply</button>
-      
       
     </form>
+    <form>
+      <div class="input-container">
+        <label for="time-value">Posted within:</label>
+        <input type="number" id="time-value" placeholder="No max" name="maxAge">
+        <select name="time-unit" id="time-unit">
+          <option value="select">select</option>
+          <option value="seconds">seconds</option>
+          <option value="minutes">minutes</option>
+          <option value="hours">hours</option>
+          <option value="days">days</option>
+          <option value="months">months</option>
+          <option value="years">years</option>
+        </select>
+        
+      </div>
+    </form>
+    <button id="apply" class="apply-button">Apply</button>
     <script src="popup.js"></script>
   </body>
 </html>
