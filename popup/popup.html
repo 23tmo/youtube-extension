@@ -1,6 +1,21 @@
-<html>
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>extension popup</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
   <body>
-    <h1>extension popup</h1>
+    <h1>YouTube Views Filter</h1>
+    <form>
+      <label for="minViewsInput">Min views:</label>
+      <input type="number" id="minViewsInput" placeholder="No min" name="minViews"><br>
+      <label for="maxViewsInput">Max views:</label>
+      <input type="number" id="maxViewsInput" placeholder="No max" name="maxViews"><br>
+      <button id = "apply">Apply</button>
+    </form>
     <script src="popup.js"></script>
   </body>
 </html>
