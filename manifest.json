@@ -9,7 +9,7 @@
     "version": "1.0",
     "content_scripts": [
       {
-        "matches": ["https://www.youtube.com/"], 
+        "matches": ["https://www.youtube.com/*"], 
         "js": ["scripts/content-script.js"]
       }
     ],
