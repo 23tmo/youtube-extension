@@ -213,7 +213,6 @@ function init() {
         }
         // Remove section if present
         if (section){
-            //console.log('REMOVED SECTION');
             section.remove();
         }
     }

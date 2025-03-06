@@ -3,7 +3,8 @@
     "name": "Youtube Extension",
     "permissions": [
       "activeTab",
-      "storage"
+      "storage",
+      "https://www.youtube.com/*"
     ],
     "description": "Extension for Youtube",
     "version": "1.0",
