@@ -14,9 +14,9 @@ Chrome extension to dynamically filter YouTube homepage videos and recommendatio
 
 <a name="general-info"></a>
 ## Introduction
-While YouTube is my go-to platform for entertainment and news, its homepage can often feel cluttered with content I’m not interested in. Although there's a video filter feature on the search results page, it’s missing from the homepage. This Chrome extension allows you to filter your recommended videos, helping you quickly discover content that interests you.
+While YouTube is my go-to platform for entertainment and news, its homepage can often feel cluttered with content I'm not interested in. Although there's a video filter feature on the search results page, it's missing from the homepage. This Chrome extension allows you to filter your recommended videos, helping you quickly discover content that interests you.
 
-This extension is just a side project after noticing a gap on YouTube’s platform. It’s also helped me practice JavaScript and Web dev. It's still in development and I’m working on adding new features!
+This extension is just a side project after noticing a gap on YouTube's platform. It's also helped me practice JavaScript and Web dev. It's still in development and I'm working on adding new features!
 
 <a name="technologies"></a>
 ## Technologies
@@ -37,11 +37,15 @@ The filter isn't on the Chrome Web Store yet, but you can use it by loading the 
 <a name="demo"></a>
 ## Demo
 
-![filter-settings](./images/filter-settings.png)
+<div align="center">
+  <img src="./images/filter-settings.png" width="400">
+</div>
 
+<br><br>
 
-
-![filter-gif](./images/filter-gif.gif)
+<div align="center">
+  <img src="./images/filter-gif.gif">
+</div>
 
 
 <a name="filter-options"></a>
