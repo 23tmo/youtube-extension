@@ -1,5 +1,6 @@
+[![Release](https://img.shields.io/github/v/release/23tmo/youtube-extension?style=flat-square)](https://github.com/23tmo/youtube-extension/releases)
+
 # YouTube Recommendations Filter 
-v1.0.0
 
 Chrome extension to dynamically filter YouTube homepage videos and recommendations. Created with Javascript and HTML/CSS.
 
