@@ -10,10 +10,16 @@ function runFunction(){
     const timeUnitElement = document.getElementById('time-unit');
     const minDurationElement = document.getElementById('minDurInput');
     const maxDurationElement = document.getElementById('maxDurInput');
+    const errorMessage = document.getElementById('error-message');
 
     // Buttons
     const applyButton = document.getElementById('apply');
     const clearButton = document.getElementById('clear');
+
+    // Add input validation
+    timeValueElement.addEventListener('input', function() {
+        if (this.value < 0) this.value = 0;
+    });
 
     clearButton.onclick = () => {
         minViewsElement.value = '';
@@ -22,6 +28,7 @@ function runFunction(){
         timeUnitElement.value = 'select';
         minDurationElement.value = '';
         maxDurationElement.value = '';
+        errorMessage.style.display = 'none';
         
         const prefs = {
             minPref: null,
@@ -37,6 +44,32 @@ function runFunction(){
     }
  
     applyButton.onclick = () => {
+        let hasError = false;
+        errorMessage.style.display = 'none';
+
+        // Validate views
+        if (minViewsElement.value < 0 || maxViewsElement.value < 0) {
+            hasError = true;
+        }
+        if (minViewsElement.value && maxViewsElement.value && parseInt(maxViewsElement.value) < parseInt(minViewsElement.value)) {
+            hasError = true;
+        }
+
+        // Validate duration format
+        const durationPattern = /^(\d{1,2}:)?\d{1,2}:\d{2}$/;
+        if (minDurationElement.value && !durationPattern.test(minDurationElement.value)) {
+            hasError = true;
+        }
+        if (maxDurationElement.value && !durationPattern.test(maxDurationElement.value)) {
+            hasError = true;
+        }
+
+        if (hasError) {
+            errorMessage.textContent = "Invalid input";
+            errorMessage.style.display = 'block';
+            return;
+        }
+
         const prefs = {
             minPref: minViewsElement.value,
             maxPref: maxViewsElement.value,

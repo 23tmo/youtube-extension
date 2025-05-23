@@ -59,7 +59,21 @@ h1 {
 
 .button-container {
   display: flex;
-  justify-content: space-between; 
+  justify-content: space-between;
+  position: relative;
+  height: 40px;
+  align-items: center;
+}
+
+.error-message {
+  color: red;
+  font-size: 12px;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: none;
+  white-space: nowrap;
 }
 
 .input-container {

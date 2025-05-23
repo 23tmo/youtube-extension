@@ -12,17 +12,17 @@
       <div class="input-container">
         <div class="input-group">
           <label for="minViewsInput">Views:</label>
-          <input type="number" id="minViewsInput" placeholder="Min views" name="minViews">
+          <input type="number" id="minViewsInput" placeholder="Min views" name="minViews" min="0">
         </div>
         <div class="input-group">
-          <input type="number" id="maxViewsInput" placeholder="Max views" name="maxViews">
+          <input type="number" id="maxViewsInput" placeholder="Max views" name="maxViews" min="0">
         </div>
       </div>
     </form>
     <form>
       <div class="input-container">
         <label for="time-value">Posted within:</label>
-        <input type="number" id="time-value" placeholder="Enter number" name="maxAge">
+        <input type="number" id="time-value" placeholder="Enter number" name="maxAge" min="0">
         <select name="time-unit" id="time-unit">
           <option value="select">select</option>
           <option value="seconds">seconds</option>
@@ -48,8 +48,9 @@
     </form>
     <div class="button-container">
       <button id="clear" class="apply-button">Clear</button>
+      <div id="error-message" class="error-message"></div>
       <button id="apply" class="apply-button">Apply</button>
-  </div>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>
