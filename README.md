@@ -41,7 +41,7 @@ The filter isn't on the Chrome Web Store yet, but you can use it by loading the 
   <img src="./images/filter-settings.png" width="400">
 </div>
 
-<br><br>
+<br>
 
 <div align="center">
   <img src="./images/filter-gif.gif">
