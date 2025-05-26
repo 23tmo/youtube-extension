@@ -50,19 +50,12 @@ The filter isn't on the Chrome Web Store yet, but you can use it by loading the 
 
 <br>
 
-<div align="center" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: 32px;">
-  <div style="display: flex; flex-direction: column; align-items: center;">
-    <img src="./images/help-message.png" width="400" style="display: block;">
-    <div style="margin-top: 8px; font-size: 15px; max-width: 400px; text-align: center;">
-      <b>Live and Sponsored Features:</b> Shows only Live and/or Sponsored videos if selected; shows videos with all features if neither is selected.
-    </div>
-  </div>
-  <div style="display: flex; flex-direction: column; align-items: center;">
-    <img src="./images/invalid-input.png" width="400" style="display: block;">
-    <div style="margin-top: 8px; font-size: 15px; max-width: 400px; text-align: center;">
-      <b>Invalid Input Detection:</b> Shown when a filter input is not in the correct format or is out of range. Guides the user to enter valid values.
-    </div>
-  </div>
+<div align="center">
+
+| <img src="./images/help-message.png" width="300"> | <img src="./images/invalid-input.png" width="300"> |
+|:-------------------------------------------------:|:--------------------------------------------------:|
+| **Help Message:** Shows only Live and/or Sponsored videos if checked; shows all if neither is selected. | **Invalid Input:** Shown when a filter input is not in the correct format or out of range. |
+
 </div>
 
 <a name="filter-options"></a>
