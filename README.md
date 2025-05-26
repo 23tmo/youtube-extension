@@ -16,6 +16,7 @@ Chrome extension to dynamically filter YouTube homepage videos and recommendatio
 * [Demo](#demo)
 * [Filter Options](#filter-options)
 * [To-do](#to-do)
+* [Troubleshooting](#troubleshooting)
 
 <a name="general-info"></a>
 ## Introduction
@@ -75,6 +76,7 @@ Upcoming features are:
 * Filter for creators by name
 * Support for filtering YouTube Shorts
 
+<a name="troubleshooting"></a>
 ## Troubleshooting
 The extension does not yet support the following YouTube features and will hide them from view when the extension is running:
 * YouTube Shorts
