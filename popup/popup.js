@@ -1,8 +1,50 @@
-document.addEventListener("DOMContentLoaded", runFunction);
-console.log("DOM loaded");
+document.addEventListener("DOMContentLoaded", function() {
+    runFunction();
+
+    // Tip toggle logic
+    const tipToggle = document.getElementById('tip-toggle');
+    const featureHelp = document.getElementById('feature-help');
+    const errorMessage = document.getElementById('error-message');
+    if (tipToggle && featureHelp && errorMessage) {
+        featureHelp.style.display = 'none';
+        errorMessage.style.display = 'none';
+        let tipVisible = false;
+        tipToggle.style.background = '#444';
+        tipToggle.style.color = '#212121';
+        tipToggle.addEventListener('click', function() {
+            tipVisible = !tipVisible;
+            featureHelp.style.display = tipVisible ? 'block' : 'none';
+            if (tipVisible) {
+                errorMessage.style.display = 'none';
+                tipToggle.setAttribute('aria-pressed', true);
+                tipToggle.style.background = '#e0e0e0';
+                tipToggle.style.color = '#000';
+            } else {
+                tipToggle.setAttribute('aria-pressed', false);
+                tipToggle.style.background = '#444';
+                tipToggle.style.color = '#212121';
+            }
+        });
+
+        // Error message logic to hide tip and reset help circle when showing error
+        const origShowError = function(msg) {
+            if (errorMessage && featureHelp && tipToggle) {
+                errorMessage.textContent = msg;
+                errorMessage.style.display = 'block';
+                featureHelp.style.display = 'none';
+                tipVisible = false;
+                tipToggle.setAttribute('aria-pressed', false);
+                tipToggle.style.background = '#444';
+                tipToggle.style.color = '#212121';
+            }
+        };
+        window.showPopupError = origShowError;
+    }
+});
 
 function runFunction(){
     chrome.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS' });
+    
     //Elements
     const minViewsElement = document.getElementById('minViewsInput');
     const maxViewsElement = document.getElementById('maxViewsInput');
@@ -10,11 +52,17 @@ function runFunction(){
     const timeUnitElement = document.getElementById('time-unit');
     const minDurationElement = document.getElementById('minDurInput');
     const maxDurationElement = document.getElementById('maxDurInput');
-    const errorMessage = document.getElementById('error-message');
+    const keywordsElement = document.getElementById('keywordsInput');
+    const regularCreatorElement = document.getElementById('regularCreator');
+    const verifiedCreatorElement = document.getElementById('verifiedCreator');
+    const artistCreatorElement = document.getElementById('artistCreator');
+    const liveElement = document.getElementById('liveVideo');
+    const sponsoredElement = document.getElementById('sponsoredVideo');
 
     // Buttons
     const applyButton = document.getElementById('apply');
     const clearButton = document.getElementById('clear');
+    const errorMessage = document.getElementById('error-message');
 
     // Add input validation
     timeValueElement.addEventListener('input', function() {
@@ -22,25 +70,19 @@ function runFunction(){
     });
 
     clearButton.onclick = () => {
+        // Reset all input fields to default values
         minViewsElement.value = '';
         maxViewsElement.value = '';
         timeValueElement.value = '';
         timeUnitElement.value = 'select';
         minDurationElement.value = '';
         maxDurationElement.value = '';
-        errorMessage.style.display = 'none';
-        
-        const prefs = {
-            minPref: null,
-            maxPref: null,
-            timeValuePref: null,
-            timeUnitPref: null,
-            minDurationPref: null,
-            maxDurationPref: null
-        }
-        chrome.tabs.query({ active: true, currentWindow: true }, function(tabs){
-            chrome.tabs.sendMessage(tabs[0].id, {message: 'clearPrefs', prefs});
-        });
+        keywordsElement.value = '';
+        regularCreatorElement.checked = true;
+        verifiedCreatorElement.checked = true;
+        artistCreatorElement.checked = true;
+        liveElement.checked = false;
+        sponsoredElement.checked = false;
     }
  
     applyButton.onclick = () => {
@@ -65,27 +107,39 @@ function runFunction(){
         }
 
         if (hasError) {
-            errorMessage.textContent = "Invalid input";
-            errorMessage.style.display = 'block';
+            window.showPopupError("Invalid input");
             return;
         }
 
         const prefs = {
-            minPref: minViewsElement.value,
-            maxPref: maxViewsElement.value,
-            timeValuePref: timeValueElement.value,
+            minPref: minViewsElement.value || null,
+            maxPref: maxViewsElement.value || null,
+            timeValuePref: timeValueElement.value || null,
             timeUnitPref: timeUnitElement.value,
-            minDurationPref: minDurationElement.value,
-            maxDurationPref: maxDurationElement.value
+            minDurationPref: minDurationElement.value || null,
+            maxDurationPref: maxDurationElement.value || null,
+            keywordsPref: keywordsElement.value || null,
+            regularCreatorPref: regularCreatorElement.checked,
+            verifiedCreatorPref: verifiedCreatorElement.checked,
+            artistCreatorPref: artistCreatorElement.checked,
+            livePref: liveElement.checked,
+            sponsoredPref: sponsoredElement.checked
         }
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs){
-            chrome.tabs.sendMessage(tabs[0].id, {message: 'newPrefs', prefs});
+            chrome.tabs.sendMessage(tabs[0].id, {message: 'newPrefs', prefs}, function(response) {
+            });
         });
     }
 
     // Save user prefs until page reload
-    chrome.storage.session.get(["minPref", "maxPref", "timeValuePref", "timeUnitPref", 'minDurationPref', 'maxDurationPref'], (result) => {
-        const { minPref, maxPref, timeValuePref, timeUnitPref, minDurationPref, maxDurationPref} = result;
+    chrome.storage.session.get(["minPref", "maxPref", "timeValuePref", "timeUnitPref", 
+                                'minDurationPref', 'maxDurationPref', 'keywordsPref', 
+                                'regularCreatorPref', 'verifiedCreatorPref', 'artistCreatorPref',
+                                'livePref', 'sponsoredPref'], (result) => {
+        const { minPref, maxPref, timeValuePref, timeUnitPref, 
+                minDurationPref, maxDurationPref, keywordsPref, 
+                regularCreatorPref, verifiedCreatorPref, artistCreatorPref,
+                livePref, sponsoredPref } = result;
         if (minPref){
             minViewsElement.value = minPref;
         }
@@ -104,5 +158,50 @@ function runFunction(){
         if (maxDurationPref){
             maxDurationElement.value = maxDurationPref;
         } 
-    })
+        if (keywordsPref){
+            keywordsElement.value = keywordsPref;
+        } 
+        if (regularCreatorPref == true || regularCreatorPref == false){
+            regularCreatorElement.checked = regularCreatorPref;            
+        }
+        if (verifiedCreatorPref == true || verifiedCreatorPref == false){
+            verifiedCreatorElement.checked = verifiedCreatorPref;
+        }
+        if (artistCreatorPref == true || artistCreatorPref == false){
+            artistCreatorElement.checked = artistCreatorPref; 
+        }
+        if (livePref == true || livePref == false){
+            liveElement.checked = livePref; 
+        }
+        if (sponsoredPref == true || sponsoredPref == false){
+            sponsoredElement.checked = sponsoredPref; 
+        }
+    });
+
+    // Custom dropdown logic
+    const dropdown = document.getElementById('time-unit-dropdown');
+    const selected = document.getElementById('dropdown-selected');
+    const options = document.getElementById('dropdown-options');
+    const hiddenInput = document.getElementById('time-unit');
+
+    selected.addEventListener('click', function(e) {
+        options.style.display = options.style.display === 'block' ? 'none' : 'block';
+    });
+
+    options.querySelectorAll('.dropdown-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            selected.textContent = this.textContent;
+            hiddenInput.value = this.getAttribute('data-value');
+            options.style.display = 'none';
+            // Mark selected
+            options.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target)) {
+            options.style.display = 'none';
+        }
+    });
 }

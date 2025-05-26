@@ -14,28 +14,117 @@ var MIN_VIEWS = null;
 var TIME_UNIT = null;
 var TIME_VALUE = null;
 
+var KEYWORDS = null;
+var REGULAR_CREATOR = null;
+var ARTIST_CREATOR = null;
+var VERIFIED_CREATOR = null;
+var LIVE = false;
+var SPONSORED = false;
+
+var ALL_VIDEOS = [];
+
 
 const TIME_UNITS = ['seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'years']; 
 
+// Default values for preferences
+var DEFAULT_PREFS = {
+    minPref: null,
+    maxPref: null,
+    timeValuePref: null,
+    timeUnitPref: null,
+    minDurationPref: null,
+    maxDurationPref: null,
+    keywordsPref: null,
+    regularCreatorPref: true,
+    verifiedCreatorPref: true,
+    artistCreatorPref: true,
+    livePref: true,
+    sponsoredPref: true
+};
+
+// Initialize with default values
+var MAX_DURATION = { hours: 0, minutes: 0, seconds: 0 };
+var MIN_DURATION = { hours: 0, minutes: 0, seconds: 0 };
+var MAX_VIEWS = null;
+var MIN_VIEWS = null;
+var TIME_UNIT = null;
+var TIME_VALUE = null;
+var KEYWORDS = null;
+var REGULAR_CREATOR = true;
+var ARTIST_CREATOR = true;
+var VERIFIED_CREATOR = true;
+var LIVE = false;
+var SPONSORED = false;
+
+var CONCURRENCY_LIMIT = 20; // Try 10, 20, 30, etc.
+
+const featureCache = new Map();
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse){
-    if (request.message === "newPrefs" || request.message === "clearPrefs"){
-        chrome.storage.session.set(request.prefs);
-        const [minHours, minMinutes, minSeconds] = request.prefs.minDurationPref.split(':');
-        const [maxHours, maxMinutes, maxSeconds] = request.prefs.maxDurationPref.split(':');
+    if (request.message === "newPrefs"){
+        // Update preferences with null checks
+        MIN_VIEWS = request.prefs.minPref !== null && request.prefs.minPref !== '' ? parseInt(request.prefs.minPref) : null;
+        MAX_VIEWS = request.prefs.maxPref !== null && request.prefs.maxPref !== '' ? parseInt(request.prefs.maxPref) : null;
+        TIME_VALUE = request.prefs.timeValuePref || null;
+        TIME_UNIT = request.prefs.timeUnitPref === 'select' ? null : request.prefs.timeUnitPref;
+        var rawKeywords = request.prefs.keywordsPref;
+        KEYWORDS = rawKeywords ? rawKeywords.replace(/[^a-zA-Z0-9$%#',]/g, '').split(',').map(v => v.toLowerCase().trim()).filter(v => v) : null;
+        REGULAR_CREATOR = request.prefs.regularCreatorPref;
+        ARTIST_CREATOR = request.prefs.artistCreatorPref;
+        VERIFIED_CREATOR = request.prefs.verifiedCreatorPref;
+        LIVE = request.prefs.livePref;
+        SPONSORED = request.prefs.sponsoredPref;
 
-        Object.assign(MIN_DURATION, { hours: parseInt(minHours), minutes: parseInt(minMinutes), seconds: parseInt(minSeconds) }); 
-        Object.assign(MAX_DURATION, { hours: parseInt(maxHours), minutes: parseInt(maxMinutes), seconds: parseInt(maxSeconds) });
-
-        MIN_VIEWS = request.prefs.minPref;
-        MAX_VIEWS = request.prefs.maxPref;
-        TIME_VALUE = request.prefs.timeValuePref;
-        TIME_UNIT = request.prefs.timeUnitPref;
-        if (TIME_UNIT === 'select'){ 
-            TIME_UNIT = null;
+        // Handle duration preferences with null checks
+        if (request.prefs.minDurationPref) {
+            const timeParts = request.prefs.minDurationPref.split(':').map(Number);
+            if (timeParts.length === 3) {
+                Object.assign(MIN_DURATION, {
+                    hours: timeParts[0] || 0,
+                    minutes: timeParts[1] || 0,
+                    seconds: timeParts[2] || 0
+                });
+            } else if (timeParts.length === 2) {
+                Object.assign(MIN_DURATION, {
+                    hours: 0,
+                    minutes: timeParts[0] || 0,
+                    seconds: timeParts[1] || 0
+                });
+            } else {
+                Object.assign(MIN_DURATION, { hours: 0, minutes: 0, seconds: 0 });
+            }
+        } else {
+            Object.assign(MIN_DURATION, { hours: 0, minutes: 0, seconds: 0 });
         }
-     }
-     init();
-})
+
+        if (request.prefs.maxDurationPref) {
+            const timeParts = request.prefs.maxDurationPref.split(':').map(Number);
+            if (timeParts.length === 3) {
+                Object.assign(MAX_DURATION, {
+                    hours: timeParts[0] || 0,
+                    minutes: timeParts[1] || 0,
+                    seconds: timeParts[2] || 0
+                });
+            } else if (timeParts.length === 2) {
+                Object.assign(MAX_DURATION, {
+                    hours: 0,
+                    minutes: timeParts[0] || 0,
+                    seconds: timeParts[1] || 0
+                });
+            } else {
+                Object.assign(MAX_DURATION, { hours: 0, minutes: 0, seconds: 0 });
+            }
+        } else {
+            Object.assign(MAX_DURATION, { hours: 0, minutes: 0, seconds: 0 });
+        }
+
+        // Save to storage and reinitialize
+        chrome.storage.session.set(request.prefs);
+        init();
+        sendResponse({status: "ok"});
+    }
+});
+
 function init() {
     'use strict';
 
@@ -146,28 +235,62 @@ function init() {
         return null; 
     }
 
+    var getTitle = function(video){
+        if(video.querySelector("#video-title")){
+            return video.querySelector("#video-title").textContent;
+        }
+        return null;
+    }
+
+    var getBadge = function(video){
+        var badges = video.querySelectorAll('div.badge');
+        var badgeCollection = [];
+        if(badges){
+            for(const b of badges){
+                // Get aria-label in a case-insensitive way
+                const badgeLabel = b.getAttribute('aria-label');
+                if (badgeLabel) {
+                    badgeCollection.push(badgeLabel.trim());
+                }
+            }
+            if(!badgeCollection.some(label => label === 'Official Artist Channel') && !badgeCollection.some(label => label === 'Verified')){
+                badgeCollection.push('Regular');
+            }
+        }
+        return badgeCollection;
+    }
+
+    var getLink = function(video){
+        if(video.querySelector("#video-title-link")){
+            return 'https://www.youtube.com' + video.querySelector("#video-title-link").getAttribute('href');
+        }
+    }
+
     // Convert text with 'K' or 'M' to number for comparison
     var convertToNumber = function(text){
         // Remove commas, convert to float
         var viewCountNumber = parseFloat(text.replace(/,/g, ''));
-        if (text.includes('K')) {
-            return viewCountNumber * 1000;
+        if (text.includes('B')) {
+            return viewCountNumber * 1000000000;
         } else if (text.includes('M')) {
             return viewCountNumber * 1000000;
+        } else if (text.includes('K')) {
+            return viewCountNumber * 1000;
         }
         return viewCountNumber;
     }
 
     var outsideViewRange = function(views){
+        if (!MIN_VIEWS && !MAX_VIEWS) return false;
         return (!views || (MAX_VIEWS && views > MAX_VIEWS) || (MIN_VIEWS && views < MIN_VIEWS));
     }
 
     var outsideAgeRange = function(age){
-        if (age && TIME_UNIT && TIME_VALUE) {
-            // Find the index of the age unit and the maximum allowed unit
+        if (!TIME_UNIT || !TIME_VALUE) return false;
+        if (age) {
             var ageUnitIndex = TIME_UNITS.indexOf(age.unit);
             var maxUnitIndex = TIME_UNITS.indexOf(TIME_UNIT);
-    
+
             if (ageUnitIndex > maxUnitIndex) {
                 return true;
             }
@@ -179,49 +302,91 @@ function init() {
         return false;
     }
 
+    var titleHasKeywords = function(title){
+        if(!KEYWORDS || !title) return false;
+        var titleWords = title.replace(/[^a-zA-Z0-9$%#' ]/g, '').split(' ');
+        titleWords = titleWords.map(v => v.toLowerCase().trim()).filter(v => v);
+        return KEYWORDS.some(v => titleWords.includes(v));
+    }
 
     var outsideDurationRange = function(duration) {
+        // If no duration filters are set, show all videos
+        if (!MIN_DURATION.hours && !MIN_DURATION.minutes && !MIN_DURATION.seconds &&
+            !MAX_DURATION.hours && !MAX_DURATION.minutes && !MAX_DURATION.seconds) {
+            return false;
+        }
+
         if (!duration) return false;
     
         const { hours, minutes, seconds } = duration;
         const { hours: minHours, minutes: minMinutes, seconds: minSeconds } = MIN_DURATION;
         const { hours: maxHours, minutes: maxMinutes, seconds: maxSeconds } = MAX_DURATION;
     
-        const isBelowMin = hours < minHours ||
-                           (hours === minHours && (minutes < minMinutes || 
-                           (minutes === minMinutes && seconds < minSeconds)));
+        // Convert to total seconds for easier comparison
+        const videoTotalSeconds = hours * 3600 + minutes * 60 + seconds;
+        const minTotalSeconds = minHours * 3600 + minMinutes * 60 + minSeconds;
+        const maxTotalSeconds = maxHours * 3600 + maxMinutes * 60 + maxSeconds;
     
-        const isAboveMax = hours > maxHours ||
-                           (hours === maxHours && (minutes > maxMinutes || 
-                           (minutes === maxMinutes && seconds > maxSeconds)));
+        // Only check min if it's set
+        const isBelowMin = minTotalSeconds > 0 && videoTotalSeconds < minTotalSeconds;
+        // Only check max if it's set
+        const isAboveMax = maxTotalSeconds > 0 && videoTotalSeconds > maxTotalSeconds;
     
         return isBelowMin || isAboveMax;
     };
+
+    var unwantedCreator = function(badgeCollection) {
+        if(REGULAR_CREATOR && ARTIST_CREATOR && VERIFIED_CREATOR) return false;
+        
+        var allowedCreators = [];
+        if(ARTIST_CREATOR) allowedCreators.push('Official Artist Channel');
+        if(VERIFIED_CREATOR) allowedCreators.push('Verified');
+        if(REGULAR_CREATOR) allowedCreators.push('Regular');
+        
+        return !badgeCollection.some(badge => allowedCreators.includes(badge));
+    }
 
     var displayVideo = function(video){
         var views = getViews(video);
         var age = getAge(video);
         var duration = getDuration(video);
+        var title = getTitle(video);
         var section = document.querySelector('ytd-rich-section-renderer');
+        var badges = getBadge(video);
 
-        if (outsideViewRange(views) || outsideDurationRange(duration) || outsideAgeRange(age)) {
+        const viewCheck = outsideViewRange(views);
+        const durationCheck = outsideDurationRange(duration);
+        const ageCheck = outsideAgeRange(age);
+        const keywordCheck = KEYWORDS ? !titleHasKeywords(title) : false;
+        const creatorCheck = unwantedCreator(badges);
+
+        // Inclusive OR logic for live/sponsored
+        const isLive = badges.some(badge => badge && badge.toUpperCase() === 'LIVE');
+        const isSponsored = badges.some(badge => badge && badge.toUpperCase() === 'SPONSORED');
+        let featureCheck = false;
+        if (LIVE || SPONSORED) {
+            if (LIVE && !SPONSORED) featureCheck = !isLive;
+            else if (!LIVE && SPONSORED) featureCheck = !isSponsored;
+            else if (LIVE && SPONSORED) featureCheck = !(isLive || isSponsored);
+        } else {
+            featureCheck = false; // show all if neither is checked
+        }
+
+        if (viewCheck || durationCheck || ageCheck || keywordCheck || creatorCheck || featureCheck) {
             video.style.display = 'none';
-
         }
         else{
             video.style.display = 'block';
         }
-        // Remove section if present
         if (section){
             section.remove();
         }
     }
-
-    // Display videos views in console
-    var handleVideos = function(addedNodes){
+    
+    var handleVideos = function(addedNodes) {
         var videos = getVideos(addedNodes);
-        if(videos && videos != []){
-            videos.forEach(displayVideo); 
+        if (videos && videos.length > 0) {
+            Array.from(videos).forEach(displayVideo);
         }
     }
 
@@ -249,16 +414,12 @@ function init() {
             
             // Initial run to load the current videos
             handleVideos(null);
-            
-
         } else {
             // If the target node is not found, check again after a short delay
-            console.error('Target node not found, retrying...');
             setTimeout(run, 1000);
         }
     };
 
     // Initial run call
     run();
-    
 };

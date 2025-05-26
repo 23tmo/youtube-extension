@@ -4,6 +4,10 @@
 
 Chrome extension to dynamically filter YouTube homepage videos and recommendations. Created with Javascript and HTML/CSS.
 
+<div align="center">
+  <img src="./images/filter-settings.png" width="400">
+</div>
+
 
 ## Table of Contents
 * [Introduction](#general-info)
@@ -17,7 +21,7 @@ Chrome extension to dynamically filter YouTube homepage videos and recommendatio
 ## Introduction
 While YouTube is my go-to platform for entertainment and news, its homepage can often feel cluttered with content I'm not interested in. Although there's a video filter feature on the search results page, it's missing from the homepage. This Chrome extension allows you to filter your recommended videos, helping you quickly discover content that interests you.
 
-This extension is just a side project after noticing a gap on YouTube's platform. It's also helped me practice JavaScript and Web dev. It's still in development and I'm working on adding new features!
+This extension is just a side project after noticing a gap on YouTube's platform. It's also helped me practice JavaScript. It's still in development and I'm working on adding new features!
 
 <a name="technologies"></a>
 ## Technologies
@@ -38,16 +42,28 @@ The filter isn't on the Chrome Web Store yet, but you can use it by loading the 
 <a name="demo"></a>
 ## Demo
 
-<div align="center">
-  <img src="./images/filter-settings.png" width="400">
-</div>
-
 <br>
 
 <div align="center">
   <img src="./images/filter-gif.gif">
 </div>
 
+<br>
+
+<div align="center" style="display: flex; flex-direction: row; align-items: flex-start; justify-content: center; gap: 32px;">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <img src="./images/help-message.png" width="400" style="display: block;">
+    <div style="margin-top: 8px; font-size: 15px; max-width: 400px; text-align: center;">
+      <b>Live and Sponsored Features:</b> Shows only Live and/or Sponsored videos if selected; shows videos with all features if neither is selected.
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <img src="./images/invalid-input.png" width="400" style="display: block;">
+    <div style="margin-top: 8px; font-size: 15px; max-width: 400px; text-align: center;">
+      <b>Invalid Input Detection:</b> Shown when a filter input is not in the correct format or is out of range. Guides the user to enter valid values.
+    </div>
+  </div>
+</div>
 
 <a name="filter-options"></a>
 ## Filter Options
@@ -55,12 +71,18 @@ Extension allows video filtering by:
 * Number of views
 * Post date
 * Duration of video
+* Keywords in video title
+* Creator types (Regular, Verfified, Official Artist)
+* Video features (Live, Sponsored)
 
 <a name="to-do"></a>
 ## To-do
 Upcoming features are:
-* Min/max posted within dates
-* Filter for different video types (video, playlist, movie)
-* Filter by video features (4k, HD, live, subtitles)
+* Filter for more video features (playlists, movies)
+* Filter for creators by name
+* Support for filtering YouTube Shorts
 
-
+## Troubleshooting
+The extension does not yet support the following YouTube features and will hide them from view when the extension is running:
+* YouTube Shorts
+* Sponsored button will not work if an ad-blocker is running
