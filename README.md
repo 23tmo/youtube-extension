@@ -54,7 +54,7 @@ The filter isn't on the Chrome Web Store yet, but you can use it by loading the 
 
 | <img src="./images/help-message.png" width="300"> | <img src="./images/invalid-input.png" width="300"> |
 |:-------------------------------------------------:|:--------------------------------------------------:|
-| **Help Message:** Shows only Live and/or Sponsored videos if checked; shows all if neither is selected. | **Invalid Input:** Shown when a filter input is not in the correct format or out of range. |
+| **Live and Sponsored:** Shows only Live and/or Sponsored videos if checked; shows all if neither is selected. | **Invalid Input:** Shown when a filter input is not in the correct format or out of range. |
 
 </div>
 
