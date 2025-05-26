@@ -3,15 +3,23 @@
     "name": "Youtube Extension",
     "permissions": [
       "activeTab",
-      "storage",
-      "https://www.youtube.com/*"
+      "storage"
+    ],
+    "host_permissions": [
+      "https://www.youtube.com/"
     ],
     "description": "Extension for Youtube",
     "version": "1.0",
     "content_scripts": [
       {
-        "matches": ["https://www.youtube.com/*"], 
-        "js": ["scripts/content-script.js"]
+        "matches": [
+          "https://www.youtube.com/",
+          "https://www.youtube.com/feed/explore",
+          "https://www.youtube.com/feed/trending",
+          "https://www.youtube.com/feed/subscriptions"
+        ],
+        "js": ["scripts/content-script.js"],
+        "run_at": "document_idle"
       }
     ],
     "action": {

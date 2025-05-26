@@ -1,6 +1,6 @@
 body {
-  width: 350px; 
-  height: 150px; 
+  width: 500px;
+  min-height: 250px;
   background-color: #373636;
 }
 h1 {
@@ -58,32 +58,57 @@ h1 {
 }
 
 .button-container {
+  margin-top: 0;
+  margin-bottom: 0;
   display: flex;
   justify-content: space-between;
+  gap: 48px;
+  margin-bottom: 4px;
+}
+
+.help-error-container {
   position: relative;
-  height: 40px;
+  width: 100%;
+  min-height: 20px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  margin-bottom: 2px;
+}
+.error-message, .help-message {
+  display: none;
+  text-align: center;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+.help-message {
+  color: #aaa;
+  font-size: 12px;
+  font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 .error-message {
-  color: red;
+  color: #aaa;
   font-size: 12px;
   font-family: -apple-system, system-ui, system-ui, "Segoe UI", Roboto, "Helvetica Neue", "Fira Sans", Ubuntu, Oxygen, "Oxygen Sans", Cantarell, "Droid Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Lucida Grande", Helvetica, Arial, sans-serif;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  display: none;
-  white-space: nowrap;
+  text-align: center;
+}
+
+.centered-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .input-container {
-  display: flex; 
-  justify-content: space-between; 
-
-  width: 50%; 
+  display: flex;
+  justify-content: center;
+  width: 90%;
+  max-width: 420px;
   margin-bottom: 5px;
   box-sizing: border-box;
-  align-items: center; 
+  align-items: center;
 }
 
 .input-group {
@@ -91,7 +116,8 @@ h1 {
   flex-direction: row;
   flex: 1;
   margin-right: 10px;
-  align-items: center; 
+  align-items: center;
+  justify-content: center;
 }
 
 .input-group:last-child {
@@ -116,4 +142,204 @@ input {
   background-color: #e6e6e6;
   text-align: center;
   box-shadow: none;
+}
+
+#artistCreator {
+  margin-top: 6px;
+}
+
+/* Custom circular checkboxes */
+input[type="checkbox"] {
+  width: 12px;
+  height: 12px;
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #444;
+  border: 2px solid #888;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  vertical-align: middle;
+  margin-right: 6px;
+  cursor: pointer;
+  transition: background 0.2s, border 0.2s;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #e53935; 
+  border: 2px solid #e53935;
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #e5393555;
+}
+
+.inline-checkbox-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0 !important;
+  flex-wrap: nowrap;
+}
+
+.inline-checkbox-group input[type="checkbox"] {
+  margin-right: 4px;
+}
+
+.inline-checkbox-group label {
+  text-align: left !important;
+  margin: 0 !important;
+  min-width: 0 !important;
+  width: auto !important;
+  font-weight: bold;
+}
+
+.input-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  width: 100%;
+  max-width: 420px;
+}
+.input-row label {
+  width: 130px;
+  min-width: 130px;
+  text-align: right;
+  margin-right: 12px;
+  margin-bottom: 0;
+}
+.input-row input[type="text"],
+.input-row input[type="number"],
+.input-row .custom-dropdown {
+  flex: 1;
+  margin-right: 8px;
+}
+.input-row .inline-checkbox-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 0;
+}
+
+.input-row .inline-checkbox-group label {
+  width: auto;
+  min-width: 0;
+  text-align: left;
+  margin: 0;
+}
+
+.checkbox-label-pair {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 12px;
+}
+
+select {
+  background-color: #444;
+  color: #fff;
+  border: 2px solid #888;
+  border-radius: 20px;
+  padding: 6px 28px 6px 10px;
+  font-size: 14px;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  margin-left: 4px;
+  margin-right: 0;
+  box-shadow: none;
+  transition: border 0.2s, background 0.2s;
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 16px 16px;
+}
+
+select:focus {
+  border: 2px solid #e53935;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 120px;
+  user-select: none;
+  font-size: 14px;
+  margin-left: 4px;
+  display: inline-block;
+}
+.dropdown-selected {
+  background: #444;
+  color: #fff;
+  border: 2px solid #888;
+  border-radius: 20px;
+  padding: 6px 28px 6px 10px;
+  cursor: pointer;
+  transition: border 0.2s, background 0.2s;
+}
+.dropdown-selected:after {
+  content: '';
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #fff;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.dropdown-options {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  width: 100%;
+  background: #373636;
+  border: 2px solid #888;
+  border-radius: 12px;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  max-height: 220px;
+  overflow-y: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;  
+}
+.dropdown-options::-webkit-scrollbar {
+  display: none; 
+}
+.dropdown-option {
+  padding: 10px 16px;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+.dropdown-option:hover, .dropdown-option.selected {
+  background: #e53935;
+  color: #fff;
+}
+
+.circle-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 8px;
+  border-radius: 50%;
+  border: 2px solid #656464;
+  background: #444;
+  color: #212121;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  padding: 0;
+}
+.circle-help:focus, .circle-help:hover {
+  background: #e0e0e0;
+  color: #000;
+  outline: none;
 }
