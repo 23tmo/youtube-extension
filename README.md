@@ -1,83 +1,69 @@
 [![Release](https://img.shields.io/github/v/release/23tmo/youtube-extension?style=flat-square)](https://github.com/23tmo/youtube-extension/releases)
 
-# YouTube Recommendations Filter 
+# YouTube Recommendations Filter
 
-Chrome extension to dynamically filter YouTube homepage videos and recommendations. Created with Javascript and HTML/CSS.
+Chrome extension that adds feed-level filtering to YouTube so you can keep recommendation pages focused on the videos you actually want to see.
 
 <div align="center">
-  <img src="./images/filter-settings.png" width="400">
+  <img src="./images/filter-settings.png" width="400" alt="Extension popup with filter settings">
 </div>
 
+## Overview
 
-## Table of Contents
-* [Introduction](#general-info)
-* [Technologies](#technologies)
-* [Setup Instructions](#setup)
-* [Demo](#demo)
-* [Filter Options](#filter-options)
-* [To-do](#to-do)
-* [Troubleshooting](#troubleshooting)
+YouTube offers filtering on some search surfaces, but not on the main recommendation feeds where most browsing happens. This project fills that gap by applying user-defined rules directly to supported YouTube feed pages.
 
-<a name="general-info"></a>
-## Introduction
-While YouTube is my go-to platform for entertainment and news, its homepage can often feel cluttered with content I'm not interested in. Although there's a video filter feature on the search results page, it's missing from the homepage. This Chrome extension allows you to filter your recommended videos, helping you quickly discover content that interests you.
+The extension currently supports filtering by:
 
-This extension is just a side project after noticing a gap on YouTube's platform. It's also helped me practice JavaScript. It's still in development and I'm working on adding new features!
+- Minimum and maximum views
+- Post age
+- Minimum and maximum duration
+- Keywords in the video title
+- Creator type: Regular, Verified, Official Artist
+- Video attributes: Live, Sponsored
 
-<a name="technologies"></a>
-## Technologies
-Project created with:
-* JavaScript
-* HTML/CSS
+## Supported Pages
 
-<a name="setup"></a>
-## Setup Instructions
-The filter isn't on the Chrome Web Store yet, but you can use it by loading the extension unpacked in developer mode on Chromium browsers.
+The extension is intentionally scoped to YouTube Home page.
 
-1. Download and unzip the extension from this repository page: Green "Code" button > Download ZIP
-2. Go to chrome://extensions/ 
-3. Turn on Developer mode.
-4. Load unpacked extension and select the unzipped folder.
-5. Click on the extension icon to set filters. Tip: Pin it for easy access.
+Other YouTube surfaces such as Shorts, search results, and watch-page sidebars are out of scope for this version.
 
-<a name="demo"></a>
 ## Demo
 
-<br>
-
 <div align="center">
-  <img src="./images/filter-gif.gif">
+  <img src="./images/filter-gif.gif" alt="Demo of the YouTube Recommendations Filter extension">
 </div>
-
-<br>
 
 <div align="center">
 
-| <img src="./images/help-message.png" width="300"> | <img src="./images/invalid-input.png" width="300"> |
-|:-------------------------------------------------:|:--------------------------------------------------:|
-| **Live and Sponsored:** Shows only Live and/or Sponsored videos if checked; shows all if neither is selected. | **Invalid Input:** Shown when a filter input is not in the correct format or out of range. |
+| <img src="./images/help-message.png" width="300" alt="Help message in popup"> | <img src="./images/invalid-input.png" width="300" alt="Invalid input message in popup"> |
+|:------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------:|
+| **Live and Sponsored:** If either option is enabled, the feed only keeps cards that match the selected feature filters. | **Invalid Input:** The popup validates user input and blocks invalid ranges or formats before applying filters. |
 
 </div>
 
-<a name="filter-options"></a>
-## Filter Options
-Extension allows video filtering by:
-* Number of views
-* Post date
-* Duration of video
-* Keywords in video title
-* Creator types (Regular, Verfified, Official Artist)
-* Video features (Live, Sponsored)
+## Tech Stack
 
-<a name="to-do"></a>
-## To-do
-Upcoming features are:
-* Filter for more video features (playlists, movies)
-* Filter for creators by name
-* Support for filtering YouTube Shorts
+- JavaScript
+- HTML/CSS
+- Chrome Extensions Manifest V3
 
-<a name="troubleshooting"></a>
-## Troubleshooting
-The extension does not yet support the following YouTube features and will hide them from view when the extension is running:
-* YouTube Shorts
-* Sponsored button will not work if an ad-blocker is running
+## Local Setup
+
+1. Clone or download this repository.
+2. Open `chrome://extensions/` in Chrome or another Chromium-based browser.
+3. Enable Developer mode.
+4. Click `Load unpacked` and select this project folder.
+5. Pin the extension so the popup is easy to access while browsing YouTube.
+
+## Known Limitations
+
+- The extension depends on YouTube's DOM structure, so selector maintenance is occasionally required when YouTube updates its markup.
+- Shorts are not supported by this version of the extension.
+- Sponsored detection may be incomplete when an ad blocker removes the label before the content script sees it.
+- The extension is designed for supported feed pages only and will not filter every YouTube surface.
+
+## Roadmap
+
+- Add support for more video features such as playlists or movies
+- Add creator-name filtering
+- Add AI-powered thumbnail analysis and filtering based on thumbnail content

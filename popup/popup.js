@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     runFunction();
 
-    // Tip toggle logic
+    // Wire the help popover so the live and sponsored rule is documented in the UI.
     const tipToggle = document.getElementById('tip-toggle');
     const featureHelp = document.getElementById('feature-help');
     const errorMessage = document.getElementById('error-message');
@@ -64,6 +64,24 @@ function runFunction(){
     const clearButton = document.getElementById('clear');
     const errorMessage = document.getElementById('error-message');
 
+    // Custom dropdown logic
+    const dropdown = document.getElementById('time-unit-dropdown');
+    const selected = document.getElementById('dropdown-selected');
+    const options = document.getElementById('dropdown-options');
+    const hiddenInput = document.getElementById('time-unit');
+
+    // Keep the visible custom dropdown and hidden input value in sync.
+    function setSelectedTimeUnit(value) {
+        const normalizedValue = value || 'select';
+        hiddenInput.value = normalizedValue;
+        const matchingOption = options.querySelector(`.dropdown-option[data-value="${normalizedValue}"]`);
+
+        selected.textContent = matchingOption ? matchingOption.textContent : 'select';
+        options.querySelectorAll('.dropdown-option').forEach(opt => {
+            opt.classList.toggle('selected', opt.getAttribute('data-value') === normalizedValue);
+        });
+    }
+
     // Add input validation
     timeValueElement.addEventListener('input', function() {
         if (this.value < 0) this.value = 0;
@@ -74,7 +92,7 @@ function runFunction(){
         minViewsElement.value = '';
         maxViewsElement.value = '';
         timeValueElement.value = '';
-        timeUnitElement.value = 'select';
+        setSelectedTimeUnit('select');
         minDurationElement.value = '';
         maxDurationElement.value = '';
         keywordsElement.value = '';
@@ -124,7 +142,7 @@ function runFunction(){
             artistCreatorPref: artistCreatorElement.checked,
             livePref: liveElement.checked,
             sponsoredPref: sponsoredElement.checked
-        }
+        };
         chrome.tabs.query({ active: true, currentWindow: true }, function(tabs){
             chrome.tabs.sendMessage(tabs[0].id, {message: 'newPrefs', prefs}, function(response) {
             });
@@ -150,8 +168,10 @@ function runFunction(){
             timeValueElement.value = timeValuePref;
         } 
         if (timeUnitPref){
-            timeUnitElement.value = timeUnitPref;
-        } 
+            setSelectedTimeUnit(timeUnitPref);
+        } else {
+            setSelectedTimeUnit('select');
+        }
         if (minDurationPref){
             minDurationElement.value = minDurationPref;
         } 
@@ -178,24 +198,14 @@ function runFunction(){
         }
     });
 
-    // Custom dropdown logic
-    const dropdown = document.getElementById('time-unit-dropdown');
-    const selected = document.getElementById('dropdown-selected');
-    const options = document.getElementById('dropdown-options');
-    const hiddenInput = document.getElementById('time-unit');
-
     selected.addEventListener('click', function(e) {
         options.style.display = options.style.display === 'block' ? 'none' : 'block';
     });
 
     options.querySelectorAll('.dropdown-option').forEach(option => {
         option.addEventListener('click', function(e) {
-            selected.textContent = this.textContent;
-            hiddenInput.value = this.getAttribute('data-value');
+            setSelectedTimeUnit(this.getAttribute('data-value'));
             options.style.display = 'none';
-            // Mark selected
-            options.querySelectorAll('.dropdown-option').forEach(opt => opt.classList.remove('selected'));
-            this.classList.add('selected');
         });
     });
 
