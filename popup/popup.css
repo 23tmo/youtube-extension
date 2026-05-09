@@ -1,7 +1,9 @@
 body {
   width: 500px;
+  max-width: 100%;
   min-height: 250px;
   background-color: #373636;
+  overflow-x: hidden;
 }
 h1 {
   color: rgb(236, 43, 43);
@@ -25,7 +27,7 @@ h1 {
   font-weight: 600;
   justify-content: center;
   line-height: 20px;
-  max-width: 480px;
+  max-width: min(480px, 100%);
   min-height: 40px;
   min-width: 0px;
   overflow: hidden;
@@ -59,11 +61,11 @@ h1 {
 
 .button-container {
   margin-top: 0;
-  margin-bottom: 0;
+  margin-bottom: 4px;
   display: flex;
   justify-content: space-between;
-  gap: 48px;
-  margin-bottom: 4px;
+  gap: clamp(12px, 8%, 48px);
+  flex-wrap: wrap;
 }
 
 .help-error-container {
@@ -181,7 +183,7 @@ input[type="checkbox"]:focus {
   align-items: center;
   gap: 4px;
   margin-bottom: 0 !important;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .inline-checkbox-group input[type="checkbox"] {
@@ -198,10 +200,10 @@ input[type="checkbox"]:focus {
 
 .input-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 10px;
   width: 100%;
-  max-width: 420px;
+  max-width: min(420px, 100%);
 }
 .input-row label {
   width: 130px;
@@ -209,11 +211,13 @@ input[type="checkbox"]:focus {
   text-align: right;
   margin-right: 12px;
   margin-bottom: 0;
+  padding-top: 6px;
 }
 .input-row input[type="text"],
 .input-row input[type="number"],
 .input-row .custom-dropdown {
   flex: 1;
+  min-width: 0;
   margin-right: 8px;
 }
 .input-row .inline-checkbox-group {
@@ -264,6 +268,8 @@ select:focus {
 .custom-dropdown {
   position: relative;
   width: 120px;
+  max-width: 100%;
+  min-width: 0;
   user-select: none;
   font-size: 14px;
   margin-left: 4px;
@@ -275,6 +281,7 @@ select:focus {
   border: 2px solid #888;
   border-radius: 20px;
   padding: 6px 28px 6px 10px;
+  box-sizing: border-box;
   cursor: pointer;
   transition: border 0.2s, background 0.2s;
 }
