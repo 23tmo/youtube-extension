@@ -22,7 +22,7 @@
         "https://www.youtube.com/"
       ],
       "js": [
-        "scripts/content-script.js"
+        "content.js"
       ],
       "run_at": "document_idle"
     }
