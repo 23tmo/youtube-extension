@@ -3,6 +3,12 @@
   "name": "YouTube Recommendations Filter",
   "version": "2.0.2",
   "description": "Filter supported YouTube feeds by views, recency, duration, title keywords, creator type, and live or sponsored status.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
     "activeTab",
     "storage"
@@ -23,7 +29,6 @@
   ],
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "YouTube Recommendations Filter",
-    "default_icon": "images/popup-icon.png"
+    "default_title": "YouTube Recommendations Filter"
   }
 }
