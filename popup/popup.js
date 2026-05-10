@@ -46,7 +46,7 @@ function runFunction() {
       });
     }
   } catch {
-    // Firefox does not implement setAccessLevel; session storage still works.
+    // Firefox and Safari do not implement setAccessLevel; session storage still works.
   }
 
   const minViewsElement = document.getElementById('minViewsInput');
@@ -167,13 +167,20 @@ function runFunction() {
       chrome.tabs.sendMessage(
         tabs[0].id,
         { message: 'newPrefs', prefs },
-        function () {}
+        function () {
+          void chrome.runtime.lastError;
+        }
       );
     });
   };
 
   // Save user prefs until page reload
-  chrome.storage.session.get(
+  const sessionStorage = chrome.storage && chrome.storage.session;
+  if (!sessionStorage) {
+    return;
+  }
+
+  sessionStorage.get(
     [
       'minPref',
       'maxPref',

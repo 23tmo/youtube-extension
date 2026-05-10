@@ -6,3 +6,10 @@ package.json
 package-lock.json
 eslint.config.js
 .prettierrc
+
+# Xcode / Safari extension
+YouTube Recommendations Filter/
+*.xcuserstate
+xcuserdata/
+safari/build/
+safari/DerivedData/
