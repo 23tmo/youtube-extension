@@ -39,9 +39,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function runFunction() {
-  chrome.storage.session.setAccessLevel({
-    accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
-  });
+  try {
+    if (chrome.storage?.session?.setAccessLevel) {
+      chrome.storage.session.setAccessLevel({
+        accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
+      });
+    }
+  } catch {
+    // Firefox and Safari do not implement setAccessLevel; session storage still works.
+  }
 
   const minViewsElement = document.getElementById('minViewsInput');
   const maxViewsElement = document.getElementById('maxViewsInput');
@@ -161,13 +167,20 @@ function runFunction() {
       chrome.tabs.sendMessage(
         tabs[0].id,
         { message: 'newPrefs', prefs },
-        function () {}
+        function () {
+          void chrome.runtime.lastError;
+        }
       );
     });
   };
 
   // Save user prefs until page reload
-  chrome.storage.session.get(
+  const sessionStorage = chrome.storage && chrome.storage.session;
+  if (!sessionStorage) {
+    return;
+  }
+
+  sessionStorage.get(
     [
       'minPref',
       'maxPref',
