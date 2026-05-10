@@ -45,15 +45,24 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 
 - JavaScript
 - HTML/CSS
-- Chrome Extensions Manifest V3
+- WebExtensions API (Manifest V3 — Chrome/Chromium; Manifest V2-compatible via `browser_specific_settings` for Firefox)
 
 ## Local Setup
+
+**Chrome / Chromium**
 
 1. Clone or download this repository.
 2. Open `chrome://extensions/` in Chrome or another Chromium-based browser.
 3. Enable Developer mode.
 4. Click `Load unpacked` and select this project folder.
 5. Pin the extension so the popup is easy to access while browsing YouTube.
+
+**Firefox**
+
+1. Clone or download this repository.
+2. Open `about:debugging#/runtime/this-firefox` in Firefox.
+3. Click `Load Temporary Add-on...` and select the `manifest.json` file inside the project folder.
+4. The extension will stay loaded until Firefox is closed.
 
 ## Known Limitations
 
