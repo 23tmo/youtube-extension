@@ -1,3 +1,7 @@
 .DS_Store
-debug/
-tests/
+node_modules/
+package.json
+package-lock.json
+eslint.config.js
+.prettierrc
+releases/
