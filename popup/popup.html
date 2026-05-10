@@ -1,25 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>extension popup</title>
-    <link rel="stylesheet" href="popup.css">
+    <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
     <h1>YouTube Recommendations Filter</h1>
     <div class="centered-form">
       <div class="input-row">
         <label for="minViewsInput">Views:</label>
-        <input type="number" id="minViewsInput" placeholder="Min views" name="minViews" min="0">
-        <input type="number" id="maxViewsInput" placeholder="Max views" name="maxViews" min="0">
+        <input
+          type="number"
+          id="minViewsInput"
+          placeholder="Min views"
+          name="minViews"
+          min="0"
+        />
+        <input
+          type="number"
+          id="maxViewsInput"
+          placeholder="Max views"
+          name="maxViews"
+          min="0"
+        />
       </div>
       <div class="input-row">
         <label for="time-value">Posted within:</label>
-        <input type="number" id="time-value" placeholder="Enter number" name="maxAge" min="0">
+        <input
+          type="number"
+          id="time-value"
+          placeholder="Enter number"
+          name="maxAge"
+          min="0"
+        />
         <div class="custom-dropdown" id="time-unit-dropdown">
           <div class="dropdown-selected" id="dropdown-selected">select</div>
-          <div class="dropdown-options" id="dropdown-options" style="display:none;">
+          <div
+            class="dropdown-options"
+            id="dropdown-options"
+            style="display: none"
+          >
             <div class="dropdown-option" data-value="select">select</div>
             <div class="dropdown-option" data-value="seconds">seconds</div>
             <div class="dropdown-option" data-value="minutes">minutes</div>
@@ -29,42 +51,90 @@
             <div class="dropdown-option" data-value="months">months</div>
             <div class="dropdown-option" data-value="years">years</div>
           </div>
-          <input type="hidden" id="time-unit" name="time-unit" value="select">
+          <input type="hidden" id="time-unit" name="time-unit" value="select" />
         </div>
       </div>
       <div class="input-row">
         <label for="minDurInput">Duration:</label>
-        <input type="text" id="minDurInput" placeholder="Min: hr:min:sec" name="minDuration">
-        <input type="text" id="maxDurInput" placeholder="Max: hr:min:sec" name="maxDuration">
+        <input
+          type="text"
+          id="minDurInput"
+          placeholder="Min: hr:min:sec"
+          name="minDuration"
+        />
+        <input
+          type="text"
+          id="maxDurInput"
+          placeholder="Max: hr:min:sec"
+          name="maxDuration"
+        />
       </div>
       <div class="input-row">
         <label for="keywordsInput">Keywords in Title:</label>
-        <input type="text" id="keywordsInput" placeholder="Seperate with commas" name="keywords">
+        <input
+          type="text"
+          id="keywordsInput"
+          placeholder="Seperate with commas"
+          name="keywords"
+        />
       </div>
       <div class="input-row">
         <label>Creator Types:</label>
         <div class="inline-checkbox-group">
-          <input type="checkbox" id="regularCreator" name="Creator" value="Regular" checked>
+          <input
+            type="checkbox"
+            id="regularCreator"
+            name="Creator"
+            value="Regular"
+            checked
+          />
           <label for="regularCreator">Regular</label>
-          <input type="checkbox" id="verifiedCreator" name="Creator" value="Verified" checked>
+          <input
+            type="checkbox"
+            id="verifiedCreator"
+            name="Creator"
+            value="Verified"
+            checked
+          />
           <label for="verifiedCreator">Verified</label>
-          <input type="checkbox" id="artistCreator" name="Creator" value="Artist" checked>
+          <input
+            type="checkbox"
+            id="artistCreator"
+            name="Creator"
+            value="Artist"
+            checked
+          />
           <label for="artistCreator">Official Artist</label>
         </div>
       </div>
       <div class="input-row">
         <label>Video Features:</label>
         <div class="inline-checkbox-group">
-          <input type="checkbox" id="liveVideo" name="Feature" value="Live">
+          <input type="checkbox" id="liveVideo" name="Feature" value="Live" />
           <label for="liveVideo">Live</label>
-          <input type="checkbox" id="sponsoredVideo" name="Feature" value="Sponsored">
+          <input
+            type="checkbox"
+            id="sponsoredVideo"
+            name="Feature"
+            value="Sponsored"
+          />
           <label for="sponsoredVideo">Sponsored</label>
-          <button id="tip-toggle" class="circle-help" aria-label="Show tip" type="button">?</button>
+          <button
+            id="tip-toggle"
+            class="circle-help"
+            aria-label="Show tip"
+            type="button"
+          >
+            ?
+          </button>
         </div>
       </div>
       <div class="help-error-container">
         <div id="error-message" class="error-message"></div>
-        <div id="feature-help" class="help-message">Select one or both to show only Live and/or Sponsored videos. Unselect both to show all videos.</div>
+        <div id="feature-help" class="help-message">
+          Select one or both to show only Live and/or Sponsored videos. Unselect
+          both to show all videos.
+        </div>
       </div>
       <div class="button-container">
         <button id="clear" class="apply-button">Reset</button>

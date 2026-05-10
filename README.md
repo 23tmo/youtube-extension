@@ -5,7 +5,7 @@
 Chrome extension that adds feed-level filtering to YouTube so you can keep recommendation pages focused on the videos you actually want to see.
 
 <div align="center">
-  <img src="./images/filter-settings.png" width="400" alt="Extension popup with filter settings">
+  <img src="./assets/filter-settings.png" width="400" alt="Extension popup with filter settings">
 </div>
 
 ## Overview
@@ -30,12 +30,12 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 ## Demo
 
 <div align="center">
-  <img src="./images/filter-gif.gif" alt="Demo of the YouTube Recommendations Filter extension">
+  <img src="./assets/filter-gif.gif" alt="Demo of the YouTube Recommendations Filter extension">
 </div>
 
 <div align="center">
 
-| <img src="./images/help-message.png" width="300" alt="Help message in popup"> | <img src="./images/invalid-input.png" width="300" alt="Invalid input message in popup"> |
+| <img src="./assets/help-message.png" width="300" alt="Help message in popup"> | <img src="./assets/invalid-input.png" width="300" alt="Invalid input message in popup"> |
 |:------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------:|
 | **Live and Sponsored:** If either option is enabled, the feed only keeps cards that match the selected feature filters. | **Invalid Input:** The popup validates user input and blocks invalid ranges or formats before applying filters. |
 
