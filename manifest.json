@@ -27,6 +27,15 @@
       "run_at": "document_idle"
     }
   ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "youtube-recommendations-filter@23tmo",
+      "data_collection_permissions": {
+        "required": [],
+        "optional": []
+      }
+    }
+  },
   "action": {
     "default_popup": "popup/popup.html",
     "default_title": "YouTube Recommendations Filter",
