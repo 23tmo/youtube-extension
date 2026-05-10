@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
   runFunction();
 
-  // Wire the help popover so the live and sponsored rule is documented in the UI.
   const tipToggle = document.getElementById('tip-toggle');
   const featureHelp = document.getElementById('feature-help');
   const errorMessage = document.getElementById('error-message');
@@ -26,17 +25,14 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     });
 
-    // Error message logic to hide tip and reset help circle when showing error
     const origShowError = function (msg) {
-      if (errorMessage && featureHelp && tipToggle) {
-        errorMessage.textContent = msg;
-        errorMessage.style.display = 'block';
-        featureHelp.style.display = 'none';
-        tipVisible = false;
-        tipToggle.setAttribute('aria-pressed', false);
-        tipToggle.style.background = '#444';
-        tipToggle.style.color = '#212121';
-      }
+      errorMessage.textContent = msg;
+      errorMessage.style.display = 'block';
+      featureHelp.style.display = 'none';
+      tipVisible = false;
+      tipToggle.setAttribute('aria-pressed', false);
+      tipToggle.style.background = '#444';
+      tipToggle.style.color = '#212121';
     };
     window.showPopupError = origShowError;
   }
@@ -47,7 +43,6 @@ function runFunction() {
     accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
   });
 
-  //Elements
   const minViewsElement = document.getElementById('minViewsInput');
   const maxViewsElement = document.getElementById('maxViewsInput');
   const timeValueElement = document.getElementById('time-value');
@@ -61,7 +56,6 @@ function runFunction() {
   const liveElement = document.getElementById('liveVideo');
   const sponsoredElement = document.getElementById('sponsoredVideo');
 
-  // Buttons
   const applyButton = document.getElementById('apply');
   const clearButton = document.getElementById('clear');
   const errorMessage = document.getElementById('error-message');
@@ -93,7 +87,7 @@ function runFunction() {
 
   // Add input validation
   timeValueElement.addEventListener('input', function () {
-    if (this.value < 0) {
+    if (Number(this.value) < 0) {
       this.value = 0;
     }
   });
@@ -118,8 +112,7 @@ function runFunction() {
     let hasError = false;
     errorMessage.style.display = 'none';
 
-    // Validate views
-    if (minViewsElement.value < 0 || maxViewsElement.value < 0) {
+    if (Number(minViewsElement.value) < 0 || Number(maxViewsElement.value) < 0) {
       hasError = true;
     }
     if (
