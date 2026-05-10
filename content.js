@@ -20,14 +20,12 @@
     years: 31557600,
   };
 
-  // Collapse arbitrary DOM whitespace into a stable string before parsing.
   function normalizeWhitespace(text) {
     return String(text || '')
       .replace(/\s+/g, ' ')
       .trim();
   }
 
-  // Convert popup time-unit values into the canonical plural keys used by the filter logic.
   function normalizeTimeUnit(unit) {
     let normalized = normalizeWhitespace(unit).toLowerCase();
     if (!normalized || normalized === 'select') {
@@ -437,13 +435,13 @@
     }
 
     if (hasFeatureFilter(prefs)) {
-      if (prefs.requireLive && prefs.requireSponsored) {
-        if (meta.isLive !== true && meta.isSponsored !== true) {
-          reasons.push('features');
-        }
-      } else if (prefs.requireLive && meta.isLive !== true) {
-        reasons.push('features');
-      } else if (prefs.requireSponsored && meta.isSponsored !== true) {
+      // When both flags are required, satisfying either one passes (OR logic).
+      const passes =
+        prefs.requireLive && prefs.requireSponsored
+          ? meta.isLive === true || meta.isSponsored === true
+          : (!prefs.requireLive || meta.isLive === true) &&
+            (!prefs.requireSponsored || meta.isSponsored === true);
+      if (!passes) {
         reasons.push('features');
       }
     }
@@ -603,7 +601,6 @@
 
   // Track the current filter state and the active observer for the current feed container.
   const state = {
-    rawPrefs: {},
     prefs: FilterCore.normalizePrefs({}),
     observer: null,
     observedRoot: null,
@@ -670,15 +667,13 @@
     }
 
     chrome.storage.session.get(STORAGE_KEYS, function (result) {
-      state.rawPrefs = result || {};
-      state.prefs = FilterCore.normalizePrefs(state.rawPrefs);
+      state.prefs = FilterCore.normalizePrefs(result || {});
       callback();
     });
   }
 
   // Normalize, persist, and apply new preferences sent from the popup.
   function updatePrefs(rawPrefs) {
-    state.rawPrefs = rawPrefs;
     state.prefs = FilterCore.normalizePrefs(rawPrefs);
 
     if (chrome.storage && chrome.storage.session) {
@@ -690,12 +685,9 @@
   }
 
   // Debounce observer refreshes during rapid SPA updates.
-  function scheduleObserverRefresh(delay) {
+  function scheduleObserverRefresh(delay = 300) {
     clearTimeout(refreshTimer);
-    refreshTimer = setTimeout(
-      refreshObserver,
-      typeof delay === 'number' ? delay : 300
-    );
+    refreshTimer = setTimeout(refreshObserver, delay);
   }
 
   // Retry until the feed container appears on the page.
@@ -913,12 +905,14 @@
         creatorHtml
       );
 
+    const creatorSeen = new Set(creatorLabels);
+
     if (hasOfficialArtistMarkup) {
-      pushUniqueValue(creatorLabels, 'Official Artist Channel');
+      pushUniqueValue(creatorLabels, 'Official Artist Channel', creatorSeen);
     }
 
     if (hasVerifiedMarkup) {
-      pushUniqueValue(creatorLabels, 'Verified');
+      pushUniqueValue(creatorLabels, 'Verified', creatorSeen);
     }
 
     if (
@@ -927,7 +921,7 @@
         return /official artist channel/i.test(label);
       })
     ) {
-      pushUniqueValue(creatorLabels, 'Verified');
+      pushUniqueValue(creatorLabels, 'Verified', creatorSeen);
     }
 
     return creatorLabels;
