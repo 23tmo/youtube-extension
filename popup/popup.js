@@ -39,9 +39,15 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function runFunction() {
-  chrome.storage.session.setAccessLevel({
-    accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
-  });
+  try {
+    if (chrome.storage?.session?.setAccessLevel) {
+      chrome.storage.session.setAccessLevel({
+        accessLevel: 'TRUSTED_AND_UNTRUSTED_CONTEXTS',
+      });
+    }
+  } catch {
+    // Firefox does not implement setAccessLevel; session storage still works.
+  }
 
   const minViewsElement = document.getElementById('minViewsInput');
   const maxViewsElement = document.getElementById('maxViewsInput');
