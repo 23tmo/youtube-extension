@@ -2,7 +2,7 @@
 
 # YouTube Recommendations Filter
 
-Chrome extension that adds feed-level filtering to YouTube so you can keep recommendation pages focused on the videos you actually want to see.
+Browser extension for Chrome, Firefox, and Safari that adds feed-level filtering to YouTube so you can keep recommendation pages focused on the videos you actually want to see.
 
 <div align="center">
   <img src="./assets/filter-settings.png" width="400" alt="Extension popup with filter settings">
@@ -45,7 +45,7 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 
 - JavaScript
 - HTML/CSS
-- WebExtensions API (Manifest V3 — Chrome/Chromium; Manifest V2-compatible via `browser_specific_settings` for Firefox)
+- WebExtensions API (Manifest V3 — Chrome/Chromium and Firefox; Safari via Xcode wrapper)
 
 ## Local Setup
 
@@ -63,6 +63,14 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 2. Open `about:debugging#/runtime/this-firefox` in Firefox.
 3. Click `Load Temporary Add-on...` and select the `manifest.json` file inside the project folder.
 4. The extension will stay loaded until Firefox is closed.
+
+**Safari**
+
+1. Clone or download this repository.
+2. Open `safari/YouTube Recommendations Filter.xcodeproj` in Xcode.
+3. Set your development team under Signing & Capabilities for all targets.
+4. Run the project (⌘R). A native app will launch that hosts the extension.
+5. In Safari, go to Settings → Extensions and enable the extension.
 
 ## Known Limitations
 
