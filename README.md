@@ -5,10 +5,6 @@
 Browser extension for Chrome, Firefox, and Safari that adds feed-level filtering to YouTube so you can keep recommendation pages focused on the videos you actually want to see.
 
 <div align="center">
-  <img src="./icons/icon128.png" width="72" alt="YouTube Recommendations Filter icon">
-</div>
-
-<div align="center">
   <img src="./assets/filter-settings.png" width="400" alt="Extension popup with filter settings">
 </div>
 
