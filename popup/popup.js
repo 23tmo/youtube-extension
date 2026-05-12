@@ -62,6 +62,7 @@ function runFunction() {
   const liveElement = document.getElementById('liveVideo');
   const sponsoredElement = document.getElementById('sponsoredVideo');
   const movieElement = document.getElementById('movieVideo');
+  const playlistElement = document.getElementById('playlistVideo');
 
   const applyButton = document.getElementById('apply');
   const clearButton = document.getElementById('clear');
@@ -114,6 +115,7 @@ function runFunction() {
     liveElement.checked = false;
     sponsoredElement.checked = false;
     movieElement.checked = false;
+    playlistElement.checked = false;
   };
 
   applyButton.onclick = () => {
@@ -168,6 +170,7 @@ function runFunction() {
       livePref: liveElement.checked,
       sponsoredPref: sponsoredElement.checked,
       moviePref: movieElement.checked,
+      playlistPref: playlistElement.checked,
     };
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(
@@ -201,6 +204,7 @@ function runFunction() {
       'livePref',
       'sponsoredPref',
       'moviePref',
+      'playlistPref',
     ],
     (result) => {
       const {
@@ -217,6 +221,7 @@ function runFunction() {
         livePref,
         sponsoredPref,
         moviePref,
+        playlistPref,
       } = result;
       if (minPref) {
         minViewsElement.value = minPref;
@@ -258,6 +263,9 @@ function runFunction() {
       }
       if (moviePref === true || moviePref === false) {
         movieElement.checked = moviePref;
+      }
+      if (playlistPref === true || playlistPref === false) {
+        playlistElement.checked = playlistPref;
       }
     }
   );

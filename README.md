@@ -19,7 +19,7 @@ The extension currently supports filtering by:
 - Minimum and maximum duration
 - Keywords in the video title
 - Creator type: Regular, Verified, Official Artist
-- Video attributes: Live, Sponsored, Movie
+- Video attributes: Live, Sponsored, Movie, Playlist
 
 ## Supported Pages
 
@@ -81,6 +81,6 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 
 ## Roadmap
 
-- Add support for more video features such as playlists and Playables
+- Add support for more video features such as Playables
 - Add creator-name filtering
 - Add AI-powered thumbnail analysis and filtering based on thumbnail content
