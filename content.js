@@ -253,6 +253,7 @@
       allowArtistCreator: prefs.artistCreatorPref !== false,
       requireLive: prefs.livePref === true,
       requireSponsored: prefs.sponsoredPref === true,
+      requireMovie: prefs.moviePref === true,
     };
   }
 
@@ -327,6 +328,77 @@
     return null;
   }
 
+  // Detect movie cards from explicit YouTube labels and movie/storefront links.
+  function detectMovieFlag(
+    labels,
+    metadataTexts,
+    linkUrls,
+    rendererNames,
+    hasCardContext
+  ) {
+    const texts = []
+      .concat(Array.isArray(labels) ? labels : [])
+      .concat(Array.isArray(metadataTexts) ? metadataTexts : [])
+      .map(normalizeWhitespace)
+      .filter(function (text) {
+        return text.length > 0;
+      });
+    const urls = Array.isArray(linkUrls) ? linkUrls : [];
+    const renderers = Array.isArray(rendererNames) ? rendererNames : [];
+
+    if (
+      texts.some(isMovieSignal) ||
+      urls.some(isMovieUrl) ||
+      renderers.some(isMovieRenderer)
+    ) {
+      return true;
+    }
+
+    if (hasCardContext) {
+      return false;
+    }
+
+    return null;
+  }
+
+  function isMovieSignal(text) {
+    const normalized = normalizeWhitespace(text).toLowerCase();
+    const movieLabels = [
+      'movie',
+      'movies',
+      'movies & tv',
+      'movies and tv',
+      'youtube movies',
+      'free with ads',
+      'buy or rent',
+      'rent or buy',
+      'available to buy',
+      'available to rent',
+      'purchased',
+    ];
+
+    if (movieLabels.indexOf(normalized) !== -1) {
+      return true;
+    }
+
+    return /\b(?:buy|rent)\b.*\bmovie\b|\bmovie\b.*\b(?:buy|rent)\b/i.test(
+      normalized
+    );
+  }
+
+  function isMovieUrl(url) {
+    const normalized = normalizeWhitespace(url).toLowerCase();
+
+    return (
+      /\/(?:feed\/)?storefront\b/.test(normalized) ||
+      /\/movies\b/.test(normalized)
+    );
+  }
+
+  function isMovieRenderer(rendererName) {
+    return /\bmovie\b/i.test(normalizeWhitespace(rendererName));
+  }
+
   function hasCreatorFilter(prefs) {
     return !(
       prefs.allowRegularCreator &&
@@ -354,7 +426,7 @@
   }
 
   function hasFeatureFilter(prefs) {
-    return prefs.requireLive || prefs.requireSponsored;
+    return prefs.requireLive || prefs.requireSponsored || prefs.requireMovie;
   }
 
   function titleMatchesKeyword(normalizedTitle, keyword) {
@@ -435,12 +507,22 @@
     }
 
     if (hasFeatureFilter(prefs)) {
-      // When both flags are required, satisfying either one passes (OR logic).
-      const passes =
-        prefs.requireLive && prefs.requireSponsored
-          ? meta.isLive === true || meta.isSponsored === true
-          : (!prefs.requireLive || meta.isLive === true) &&
-            (!prefs.requireSponsored || meta.isSponsored === true);
+      const selectedFeatures = [];
+
+      if (prefs.requireLive) {
+        selectedFeatures.push(meta.isLive === true);
+      }
+      if (prefs.requireSponsored) {
+        selectedFeatures.push(meta.isSponsored === true);
+      }
+      if (prefs.requireMovie) {
+        selectedFeatures.push(meta.isMovie === true);
+      }
+
+      const passes = selectedFeatures.some(function (selectedFeature) {
+        return selectedFeature;
+      });
+
       if (!passes) {
         reasons.push('features');
       }
@@ -466,6 +548,7 @@
     classifyCreatorType: classifyCreatorType,
     detectLiveFlag: detectLiveFlag,
     detectSponsoredFlag: detectSponsoredFlag,
+    detectMovieFlag: detectMovieFlag,
     evaluateVideo: evaluateVideo,
   };
 });
@@ -498,6 +581,7 @@
     'artistCreatorPref',
     'livePref',
     'sponsoredPref',
+    'moviePref',
   ];
   // Selector lists cover both legacy YouTube renderers and the newer lockup view-model markup.
   const VIDEO_RENDERER_SELECTOR =
@@ -563,6 +647,10 @@
     'yt-thumbnail-badge-view-model [aria-label]',
     'ytd-thumbnail-overlay-time-status-renderer',
     'ytd-thumbnail-overlay-time-status-renderer [aria-label]',
+  ];
+  const MOVIE_LINK_SELECTORS = [
+    'a[href*="/movies"]',
+    'a[href*="/feed/storefront"]',
   ];
   const CREATOR_BADGE_SELECTORS = [
     'ytd-author-badge-renderer',
@@ -830,6 +918,10 @@
     );
     const duration = extractDuration(card);
     const featureLabels = collectCandidateTexts(card, FEATURE_BADGE_SELECTORS);
+    const movieLinks = collectAttributeTexts(card, MOVIE_LINK_SELECTORS, [
+      'href',
+    ]);
+    const rendererNames = collectRendererNames(card);
     const creatorBadgeLabels = collectCandidateTexts(
       card,
       CREATOR_BADGE_SELECTORS
@@ -866,7 +958,36 @@
         metadataTexts,
         hasCardContext
       ),
+      isMovie: FilterCore.detectMovieFlag(
+        featureLabels,
+        metadataTexts,
+        movieLinks,
+        rendererNames,
+        hasCardContext
+      ),
     };
+  }
+
+  // Capture custom element names such as ytd-movie-renderer without title matching.
+  function collectRendererNames(card) {
+    const rendererNames = [];
+    const seen = new Set();
+
+    pushRendererName(rendererNames, seen, card);
+    card.querySelectorAll('*').forEach(function (element) {
+      pushRendererName(rendererNames, seen, element);
+    });
+
+    return rendererNames;
+  }
+
+  function pushRendererName(rendererNames, seen, element) {
+    if (!element || !element.localName || seen.has(element.localName)) {
+      return;
+    }
+
+    seen.add(element.localName);
+    rendererNames.push(element.localName);
   }
 
   // Read duration from visible overlay text or accessibility labels.
