@@ -19,7 +19,7 @@ The extension currently supports filtering by:
 - Minimum and maximum duration
 - Keywords in the video title
 - Creator type: Regular, Verified, Official Artist
-- Video attributes: Live, Sponsored
+- Video attributes: Live, Sponsored, Movie
 
 ## Supported Pages
 
@@ -35,9 +35,9 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 
 <div align="center">
 
-| <img src="./assets/help-message.png" width="300" alt="Help message in popup"> | <img src="./assets/invalid-input.png" width="300" alt="Invalid input message in popup"> |
-|:------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------:|
-| **Live and Sponsored:** If either option is enabled, the feed only keeps cards that match the selected feature filters. | **Invalid Input:** The popup validates user input and blocks invalid ranges or formats before applying filters. |
+|                       <img src="./assets/help-message.png" width="300" alt="Help message in popup">                       |             <img src="./assets/invalid-input.png" width="300" alt="Invalid input message in popup">             |
+| :-----------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------: |
+| **Video Features:** If any feature option is enabled, the feed only keeps cards that match at least one selected feature. | **Invalid Input:** The popup validates user input and blocks invalid ranges or formats before applying filters. |
 
 </div>
 
@@ -81,6 +81,6 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 
 ## Roadmap
 
-- Add support for more video features such as playlists or movies
+- Add support for more video features such as playlists and Playables
 - Add creator-name filtering
 - Add AI-powered thumbnail analysis and filtering based on thumbnail content
