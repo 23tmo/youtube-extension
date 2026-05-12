@@ -254,6 +254,7 @@
       requireLive: prefs.livePref === true,
       requireSponsored: prefs.sponsoredPref === true,
       requireMovie: prefs.moviePref === true,
+      requirePlaylist: prefs.playlistPref === true,
     };
   }
 
@@ -399,6 +400,76 @@
     return /\bmovie\b/i.test(normalizeWhitespace(rendererName));
   }
 
+  // Detect playlist cards from explicit YouTube labels, playlist links, and renderers.
+  function detectPlaylistFlag(
+    labels,
+    metadataTexts,
+    linkUrls,
+    rendererNames,
+    hasCardContext
+  ) {
+    const texts = []
+      .concat(Array.isArray(labels) ? labels : [])
+      .concat(Array.isArray(metadataTexts) ? metadataTexts : [])
+      .map(normalizeWhitespace)
+      .filter(function (text) {
+        return text.length > 0;
+      });
+    const urls = Array.isArray(linkUrls) ? linkUrls : [];
+    const renderers = Array.isArray(rendererNames) ? rendererNames : [];
+
+    if (
+      texts.some(isPlaylistSignal) ||
+      urls.some(isPlaylistUrl) ||
+      renderers.some(isPlaylistRenderer)
+    ) {
+      return true;
+    }
+
+    if (hasCardContext) {
+      return false;
+    }
+
+    return null;
+  }
+
+  function isPlaylistSignal(text) {
+    const normalized = normalizeWhitespace(text).toLowerCase();
+    const playlistLabels = [
+      'playlist',
+      'playlists',
+      'full playlist',
+      'view playlist',
+      'view full playlist',
+      'watch full playlist',
+      'created playlist',
+      'official playlist',
+    ];
+
+    if (playlistLabels.indexOf(normalized) !== -1) {
+      return true;
+    }
+
+    return /\bplaylist\b.*\b\d+\s+videos?\b|\b\d+\s+videos?\b.*\bplaylist\b/i.test(
+      normalized
+    );
+  }
+
+  function isPlaylistUrl(url) {
+    return /\/playlist(?:\?|$)/i.test(normalizeWhitespace(url));
+  }
+
+  function isPlaylistRenderer(rendererName) {
+    const normalized = normalizeWhitespace(rendererName).toLowerCase();
+    const playlistRenderers = [
+      'ytd-playlist-renderer',
+      'ytd-grid-playlist-renderer',
+      'ytd-rich-grid-playlist-renderer',
+    ];
+
+    return playlistRenderers.indexOf(normalized) !== -1;
+  }
+
   function hasCreatorFilter(prefs) {
     return !(
       prefs.allowRegularCreator &&
@@ -426,7 +497,12 @@
   }
 
   function hasFeatureFilter(prefs) {
-    return prefs.requireLive || prefs.requireSponsored || prefs.requireMovie;
+    return (
+      prefs.requireLive ||
+      prefs.requireSponsored ||
+      prefs.requireMovie ||
+      prefs.requirePlaylist
+    );
   }
 
   function titleMatchesKeyword(normalizedTitle, keyword) {
@@ -518,6 +594,9 @@
       if (prefs.requireMovie) {
         selectedFeatures.push(meta.isMovie === true);
       }
+      if (prefs.requirePlaylist) {
+        selectedFeatures.push(meta.isPlaylist === true);
+      }
 
       const passes = selectedFeatures.some(function (selectedFeature) {
         return selectedFeature;
@@ -549,6 +628,7 @@
     detectLiveFlag: detectLiveFlag,
     detectSponsoredFlag: detectSponsoredFlag,
     detectMovieFlag: detectMovieFlag,
+    detectPlaylistFlag: detectPlaylistFlag,
     evaluateVideo: evaluateVideo,
   };
 });
@@ -582,10 +662,11 @@
     'livePref',
     'sponsoredPref',
     'moviePref',
+    'playlistPref',
   ];
   // Selector lists cover both legacy YouTube renderers and the newer lockup view-model markup.
   const VIDEO_RENDERER_SELECTOR =
-    'ytd-rich-item-renderer, ytd-video-renderer, ytd-grid-video-renderer';
+    'ytd-rich-item-renderer, ytd-video-renderer, ytd-grid-video-renderer, ytd-playlist-renderer';
   const FEED_CONTAINER_SELECTORS = [
     'ytd-rich-grid-renderer #contents',
     'ytd-two-column-browse-results-renderer ytd-rich-grid-renderer #contents',
@@ -652,6 +733,7 @@
     'a[href*="/movies"]',
     'a[href*="/feed/storefront"]',
   ];
+  const PLAYLIST_LINK_SELECTORS = ['a[href^="/playlist"]'];
   const CREATOR_BADGE_SELECTORS = [
     'ytd-author-badge-renderer',
     'ytd-author-badge-renderer [aria-label]',
@@ -921,6 +1003,9 @@
     const movieLinks = collectAttributeTexts(card, MOVIE_LINK_SELECTORS, [
       'href',
     ]);
+    const playlistLinks = collectAttributeTexts(card, PLAYLIST_LINK_SELECTORS, [
+      'href',
+    ]);
     const rendererNames = collectRendererNames(card);
     const creatorBadgeLabels = collectCandidateTexts(
       card,
@@ -965,10 +1050,17 @@
         rendererNames,
         hasCardContext
       ),
+      isPlaylist: FilterCore.detectPlaylistFlag(
+        featureLabels,
+        metadataTexts,
+        playlistLinks,
+        rendererNames,
+        hasCardContext
+      ),
     };
   }
 
-  // Capture custom element names such as ytd-movie-renderer without title matching.
+  // Capture custom feature renderer names without title matching.
   function collectRendererNames(card) {
     const rendererNames = [];
     const seen = new Set();
