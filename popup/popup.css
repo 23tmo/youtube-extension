@@ -261,9 +261,14 @@ input[type='checkbox']:focus {
 
 .checkbox-label-pair {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 4px;
   margin-right: 12px;
+}
+
+.checkbox-label-pair input[type='checkbox'] {
+  margin-right: 0;
 }
 
 select {

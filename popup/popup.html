@@ -110,17 +110,37 @@
       <div class="input-row">
         <label>Video Features:</label>
         <div class="inline-checkbox-group">
-          <input type="checkbox" id="liveVideo" name="Feature" value="Live" />
-          <label for="liveVideo">Live</label>
-          <input
-            type="checkbox"
-            id="sponsoredVideo"
-            name="Feature"
-            value="Sponsored"
-          />
-          <label for="sponsoredVideo">Sponsored</label>
-          <input type="checkbox" id="movieVideo" name="Feature" value="Movie" />
-          <label for="movieVideo">Movie</label>
+          <span class="checkbox-label-pair">
+            <input type="checkbox" id="liveVideo" name="Feature" value="Live" />
+            <label for="liveVideo">Live</label>
+          </span>
+          <span class="checkbox-label-pair">
+            <input
+              type="checkbox"
+              id="sponsoredVideo"
+              name="Feature"
+              value="Sponsored"
+            />
+            <label for="sponsoredVideo">Sponsored</label>
+          </span>
+          <span class="checkbox-label-pair">
+            <input
+              type="checkbox"
+              id="movieVideo"
+              name="Feature"
+              value="Movie"
+            />
+            <label for="movieVideo">Movie</label>
+          </span>
+          <span class="checkbox-label-pair">
+            <input
+              type="checkbox"
+              id="playlistVideo"
+              name="Feature"
+              value="Playlist"
+            />
+            <label for="playlistVideo">Playlist</label>
+          </span>
           <button
             id="tip-toggle"
             class="circle-help"
@@ -134,8 +154,8 @@
       <div class="help-error-container">
         <div id="error-message" class="error-message"></div>
         <div id="feature-help" class="help-message">
-          Select one or more to show only matching Live, Sponsored, or Movie
-          videos. Unselect all to show all videos.
+          Select one or more to show only matching Live, Sponsored, Movie, or
+          Playlist videos. Unselect all to show all videos.
         </div>
       </div>
       <div class="button-container">
