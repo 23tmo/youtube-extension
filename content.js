@@ -255,6 +255,7 @@
       requireSponsored: prefs.sponsoredPref === true,
       requireMovie: prefs.moviePref === true,
       requirePlaylist: prefs.playlistPref === true,
+      requireShorts: prefs.shortsPref === true,
     };
   }
 
@@ -470,6 +471,62 @@
     return playlistRenderers.indexOf(normalized) !== -1;
   }
 
+  // Detect Shorts cards from explicit YouTube labels, Shorts links, and renderers.
+  function detectShortsFlag(
+    labels,
+    metadataTexts,
+    linkUrls,
+    rendererNames,
+    hasCardContext
+  ) {
+    const texts = []
+      .concat(Array.isArray(labels) ? labels : [])
+      .concat(Array.isArray(metadataTexts) ? metadataTexts : [])
+      .map(normalizeWhitespace)
+      .filter(function (text) {
+        return text.length > 0;
+      });
+    const urls = Array.isArray(linkUrls) ? linkUrls : [];
+    const renderers = Array.isArray(rendererNames) ? rendererNames : [];
+
+    if (
+      texts.some(isShortsSignal) ||
+      urls.some(isShortsUrl) ||
+      renderers.some(isShortsRenderer)
+    ) {
+      return true;
+    }
+
+    if (hasCardContext) {
+      return false;
+    }
+
+    return null;
+  }
+
+  function isShortsSignal(text) {
+    const normalized = normalizeWhitespace(text).toLowerCase();
+    const shortsLabels = ['shorts', 'youtube shorts', 'watch shorts'];
+
+    return shortsLabels.indexOf(normalized) !== -1;
+  }
+
+  function isShortsUrl(url) {
+    return /\/shorts\//i.test(normalizeWhitespace(url));
+  }
+
+  function isShortsRenderer(rendererName) {
+    const normalized = normalizeWhitespace(rendererName).toLowerCase();
+    const shortsRenderers = [
+      'ytd-reel-item-renderer',
+      'ytd-reel-video-renderer',
+      'ytm-shorts-lockup-view-model',
+      'yt-shorts-lockup-view-model',
+    ];
+
+    return shortsRenderers.indexOf(normalized) !== -1;
+  }
+
   function hasCreatorFilter(prefs) {
     return !(
       prefs.allowRegularCreator &&
@@ -501,7 +558,8 @@
       prefs.requireLive ||
       prefs.requireSponsored ||
       prefs.requireMovie ||
-      prefs.requirePlaylist
+      prefs.requirePlaylist ||
+      prefs.requireShorts
     );
   }
 
@@ -597,6 +655,9 @@
       if (prefs.requirePlaylist) {
         selectedFeatures.push(meta.isPlaylist === true);
       }
+      if (prefs.requireShorts) {
+        selectedFeatures.push(meta.isShorts === true);
+      }
 
       const passes = selectedFeatures.some(function (selectedFeature) {
         return selectedFeature;
@@ -629,6 +690,7 @@
     detectSponsoredFlag: detectSponsoredFlag,
     detectMovieFlag: detectMovieFlag,
     detectPlaylistFlag: detectPlaylistFlag,
+    detectShortsFlag: detectShortsFlag,
     evaluateVideo: evaluateVideo,
   };
 });
@@ -663,10 +725,11 @@
     'sponsoredPref',
     'moviePref',
     'playlistPref',
+    'shortsPref',
   ];
   // Selector lists cover both legacy YouTube renderers and the newer lockup view-model markup.
   const VIDEO_RENDERER_SELECTOR =
-    'ytd-rich-item-renderer, ytd-video-renderer, ytd-grid-video-renderer, ytd-playlist-renderer';
+    'ytd-rich-item-renderer, ytd-video-renderer, ytd-grid-video-renderer, ytd-playlist-renderer, ytd-reel-item-renderer';
   const FEED_CONTAINER_SELECTORS = [
     'ytd-rich-grid-renderer #contents',
     'ytd-two-column-browse-results-renderer ytd-rich-grid-renderer #contents',
@@ -734,6 +797,7 @@
     'a[href*="/feed/storefront"]',
   ];
   const PLAYLIST_LINK_SELECTORS = ['a[href^="/playlist"]'];
+  const SHORTS_LINK_SELECTORS = ['a[href*="/shorts/"]'];
   const CREATOR_BADGE_SELECTORS = [
     'ytd-author-badge-renderer',
     'ytd-author-badge-renderer [aria-label]',
@@ -1006,6 +1070,9 @@
     const playlistLinks = collectAttributeTexts(card, PLAYLIST_LINK_SELECTORS, [
       'href',
     ]);
+    const shortsLinks = collectAttributeTexts(card, SHORTS_LINK_SELECTORS, [
+      'href',
+    ]);
     const rendererNames = collectRendererNames(card);
     const creatorBadgeLabels = collectCandidateTexts(
       card,
@@ -1054,6 +1121,13 @@
         featureLabels,
         metadataTexts,
         playlistLinks,
+        rendererNames,
+        hasCardContext
+      ),
+      isShorts: FilterCore.detectShortsFlag(
+        featureLabels,
+        metadataTexts,
+        shortsLinks,
         rendererNames,
         hasCardContext
       ),

@@ -19,13 +19,13 @@ The extension currently supports filtering by:
 - Minimum and maximum duration
 - Keywords in the video title
 - Creator type: Regular, Verified, Official Artist
-- Video attributes: Live, Sponsored, Movie, Playlist
+- Video attributes: Live, Sponsored, Movie, Playlist, Shorts
 
 ## Supported Pages
 
 The extension is intentionally scoped to YouTube Home page.
 
-Other YouTube surfaces such as Shorts, search results, and watch-page sidebars are out of scope for this version.
+Other YouTube surfaces such as the Shorts page, search results, and watch-page sidebars are out of scope for this version.
 
 ## Demo
 
@@ -75,12 +75,12 @@ Other YouTube surfaces such as Shorts, search results, and watch-page sidebars a
 ## Known Limitations
 
 - The extension depends on YouTube's DOM structure, so selector maintenance is occasionally required when YouTube updates its markup.
-- Shorts are not supported by this version of the extension.
+- Shorts filtering depends on YouTube exposing explicit Shorts card signals in the supported Home feed.
 - Sponsored detection may be incomplete when an ad blocker removes the label before the content script sees it.
 - The extension is designed for supported feed pages only and will not filter every YouTube surface.
 
 ## Roadmap
 
-- Add support for more video features such as Playables
+- Add support for more video feature types such as Playables
 - Add creator-name filtering
 - Add AI-powered thumbnail analysis and filtering based on thumbnail content
